@@ -137,6 +137,15 @@
     animation: softPulse 2.5s infinite;
   }
 
+  /* Floating install banner pulse */
+  @keyframes installBannerIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .install-banner-enter {
+    animation: installBannerIn 0.45s ease-out forwards;
+  }
+
   /* Camera modal video */
   #camera-preview {
     transform: scaleX(-1); /* mirror for natural selfie feel */
@@ -148,6 +157,17 @@
     height: 100%;
     object-fit: cover;
     aspect-ratio: 16 / 9;
+  }
+
+  /* Video interaction controls */
+  .video-actions button {
+    transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .video-actions button:active {
+    transform: scale(0.94);
+  }
+  .like-active {
+    color: #8B2E2E !important;
   }
 
   /* PERFECT A4 PRINT MEDIA STYLES */
@@ -230,8 +250,11 @@
                 class="install-btn-pulse bg-[#C49A6C] text-[#1B1B1B] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#b8895a] transition flex items-center gap-1.5 shadow"
                 aria-label="Install BSAC App">
           <i class="fas fa-download"></i>
-          <span class="hidden sm:inline">Install</span>
+          <span class="hidden sm:inline">Install App</span>
         </button>
+        <span v-else-if="isInstalled" class="text-[10px] text-[#F5F0E8]/80 font-semibold hidden sm:inline-flex items-center gap-1">
+          <i class="fas fa-check-circle text-[#C49A6C]"></i> Installed
+        </span>
       </nav>
     </div>
   </header>
@@ -250,6 +273,49 @@
     </p>
     <div class="mt-8 w-48 bg-gray-800 h-1.5 rounded-full overflow-hidden">
       <div class="bg-[#8B2E2E] h-full animate-pulse w-full transition-all duration-[5000ms]"></div>
+    </div>
+  </div>
+
+  <!-- OPTIONAL NAME PERSONALIZATION (after welcome) -->
+  <div v-if="namePromptActive" class="fixed inset-0 z-[99990] bg-black/55 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl animate-text" role="dialog" aria-modal="true" aria-labelledby="name-prompt-title">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-[#F5F0E8] flex items-center justify-center">
+        <i class="fas fa-user text-2xl text-[#8B2E2E]"></i>
+      </div>
+      <h3 id="name-prompt-title" class="text-xl font-bold text-gray-800 mb-2">What is your name?</h3>
+      <p class="text-gray-500 text-sm mb-5">Optional — we can personalise a few messages for you during this visit.</p>
+      <input v-model="nameInput" type="text" placeholder="Your first name" maxlength="40" autocomplete="given-name"
+             class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E] mb-4 text-center"
+             @keyup.enter="saveUserName" aria-label="Your name" />
+      <div class="flex flex-col gap-2">
+        <button @click="saveUserName" class="w-full bg-[#8B2E2E] text-white py-3 rounded-full font-semibold hover:bg-[#6c2323] transition">
+          Continue
+        </button>
+        <button @click="skipUserName" class="w-full bg-gray-100 text-gray-600 py-2.5 rounded-full font-semibold hover:bg-gray-200 transition text-sm">
+          Rather not say
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING ANIMATED INSTALL BSAC APP BANNER -->
+  <div v-if="showInstallBanner && deferredPrompt && !isInstalled"
+       class="fixed bottom-20 left-0 right-0 z-[9990] px-4 no-print pointer-events-none">
+    <div class="max-w-md mx-auto pointer-events-auto install-banner-enter">
+      <div class="bg-white rounded-2xl shadow-2xl border border-[#C49A6C]/40 p-4 flex items-center gap-3">
+        <img src="app.png" alt="BSAC" class="w-12 h-12 rounded-xl object-cover flex-shrink-0 border border-gray-100" />
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-sm text-gray-900 leading-tight">Install BSAC App</p>
+          <p class="text-[11px] text-gray-500 mt-0.5">Add to home screen for quick access</p>
+        </div>
+        <button @click="installApp"
+                class="install-btn-pulse bg-[#8B2E2E] text-white text-xs font-bold px-4 py-2.5 rounded-full hover:bg-[#6c2323] transition flex-shrink-0 shadow">
+          Install
+        </button>
+        <button @click="dismissInstallBanner" class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0" aria-label="Dismiss install prompt">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -612,7 +678,7 @@
           </button>
 
           <p v-if="messageSuccess" class="text-center text-sm text-emerald-600 font-semibold bg-emerald-50 p-3 rounded-xl">
-            <i class="fas fa-check-circle mr-1"></i> Message sent successfully. We will get back to you soon.
+            <i class="fas fa-check-circle mr-1"></i> {{ personalizedMessageThanks }}
           </p>
         </form>
       </div>
@@ -922,17 +988,59 @@
 
       <!-- Media Cards — rows, professional sizing, correct aspect ratio -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
-        <div v-for="(item, idx) in activitiesMedia" :key="idx" class="video-card bg-white rounded-2xl shadow-lg overflow-hidden hover:-translate-y-1 transition">
+        <div v-for="(item, idx) in activitiesMedia" :key="idx" class="video-card bg-white rounded-2xl shadow-lg overflow-hidden hover:-translate-y-1 transition" :data-video-idx="idx">
           <div class="aspect-video bg-gray-900 relative">
             <video :src="item.src" controls preload="metadata" playsinline
-                   class="w-full h-full object-cover"
-                   @play="onVideoPlay($event)">
+                   class="w-full h-full object-cover activity-video"
+                   :data-idx="idx"
+                   @play="onVideoPlay($event, idx)">
               Your browser does not support the video tag.
             </video>
           </div>
           <div class="p-4">
             <h3 class="font-bold text-gray-800 text-sm">{{ item.title }}</h3>
             <p class="text-xs text-gray-500 mt-1">{{ item.desc }}</p>
+
+            <!-- Like / Comment / Share -->
+            <div class="video-actions mt-3 flex items-center gap-1 border-t border-gray-100 pt-3">
+              <button type="button" @click="toggleLike(idx)"
+                      class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold hover:bg-[#F5F0E8] transition"
+                      :class="item.liked ? 'like-active text-[#8B2E2E]' : 'text-gray-600'"
+                      :aria-pressed="item.liked" :aria-label="item.liked ? 'Unlike' : 'Like'">
+                <i :class="item.liked ? 'fas fa-heart' : 'far fa-heart'"></i>
+                <span>{{ item.likes || 0 }}</span>
+              </button>
+              <button type="button" @click="toggleCommentBox(idx)"
+                      class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold text-gray-600 hover:bg-[#F5F0E8] transition"
+                      aria-label="Comment">
+                <i class="far fa-comment"></i>
+                <span>{{ (item.comments && item.comments.length) || 0 }}</span>
+              </button>
+              <button type="button" @click="shareVideo(item)"
+                      class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold text-gray-600 hover:bg-[#F5F0E8] transition ml-auto"
+                      aria-label="Share this video">
+                <i class="fas fa-share-alt"></i>
+                <span>Share</span>
+              </button>
+            </div>
+
+            <!-- Comment box -->
+            <div v-if="item.showComments" class="mt-3 space-y-2">
+              <div v-if="item.comments && item.comments.length" class="max-h-28 overflow-y-auto space-y-1.5 mb-2">
+                <div v-for="(c, ci) in item.comments" :key="ci" class="bg-[#F5F0E8] rounded-lg px-3 py-1.5 text-xs text-gray-700">
+                  <span class="font-semibold text-[#8B2E2E]">{{ c.name }}:</span> {{ c.text }}
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <input v-model="item.newComment" type="text" placeholder="Write a comment…" maxlength="200"
+                       class="flex-1 p-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-[#8B2E2E]"
+                       @keyup.enter="addComment(idx)" aria-label="Write a comment" />
+                <button type="button" @click="addComment(idx)"
+                        class="bg-[#8B2E2E] text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-[#6c2323] transition">
+                  Post
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1027,6 +1135,10 @@ createApp({
     return {
       currentView: 'home',
       welcomeActive: true,
+      namePromptActive: false,
+      userName: '',
+      nameInput: '',
+      nameSkipped: false,
       currentSlide: 0,
       backgroundSlides: ['bg1.png', 'bg2.png', 'bg3.png'],
       slideInterval: null,
@@ -1088,10 +1200,14 @@ createApp({
       // PWA
       deferredPrompt: null,
       isInstalled: false,
+      showInstallBanner: false,
+      installBannerDismissed: false,
+      // Video observer
+      videoObserver: null,
       activitiesMedia: [
-        { src: 'vid1.mp4', title: 'Fashion Design Practical', desc: 'Hands-on garment construction session' },
-        { src: 'vid2.mp4', title: 'Bakery Class Highlights', desc: 'Students mastering baking techniques' },
-        { src: 'vid3.mp4', title: 'Centre Activities Overview', desc: 'Moments from training and community' }
+        { src: 'vid1.mp4', title: 'Fashion Design Practical', desc: 'Hands-on garment construction session', likes: 0, liked: false, comments: [], showComments: false, newComment: '' },
+        { src: 'vid2.mp4', title: 'Bakery Class Highlights', desc: 'Students mastering baking techniques', likes: 0, liked: false, comments: [], showComments: false, newComment: '' },
+        { src: 'vid3.mp4', title: 'Centre Activities Overview', desc: 'Moments from training and community', likes: 0, liked: false, comments: [], showComments: false, newComment: '' }
       ],
       stats: [
         { label: 'Trained Graduates', count: '100+' },
@@ -1127,12 +1243,32 @@ createApp({
       const subject = encodeURIComponent(`Payment Proof: BSAC Application - ${this.form.firstName} ${this.form.surname}`);
       const body = encodeURIComponent(`Hello BSAC Team,\n\nI have completed my admission form payment for ${this.form.course}.\n\nApplicant: ${this.form.firstName} ${this.form.surname}\nPhone: ${this.form.phone}\n\nPlease find attached my payment proof.\n\nThank you.`);
       return `mailto:bsacutako@gmail.com?subject=${subject}&body=${body}`;
+    },
+    personalizedMessageThanks() {
+      if (this.userName) {
+        return `Thank you, ${this.userName}, for your message. Please stay tuned — we will get back to you as soon as possible!`;
+      }
+      return 'Thank you for your message. Please stay tuned — we will get back to you as soon as possible!';
     }
   },
   mounted() {
-    // Hide splash screen after 5 seconds
+    // Hide splash screen after 5 seconds, then optionally ask for name
     setTimeout(() => {
       this.welcomeActive = false;
+      // Show name prompt only if not already decided this session
+      try {
+        const stored = sessionStorage.getItem('bsac_user_name');
+        const skipped = sessionStorage.getItem('bsac_name_skipped');
+        if (stored) {
+          this.userName = stored;
+        } else if (!skipped) {
+          this.namePromptActive = true;
+        } else {
+          this.nameSkipped = true;
+        }
+      } catch (e) {
+        this.namePromptActive = true;
+      }
     }, 5000);
 
     // Background Slideshow
@@ -1154,25 +1290,81 @@ createApp({
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       this.deferredPrompt = e;
+      // Show floating banner after a short delay if not dismissed
+      if (!this.installBannerDismissed && !this.isInstalled) {
+        setTimeout(() => {
+          if (this.deferredPrompt && !this.isInstalled && !this.installBannerDismissed) {
+            this.showInstallBanner = true;
+          }
+        }, 8000);
+      }
     });
     window.addEventListener('appinstalled', () => {
       this.isInstalled = true;
       this.deferredPrompt = null;
+      this.showInstallBanner = false;
     });
     // Detect already installed (standalone)
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
       this.isInstalled = true;
     }
+    try {
+      if (sessionStorage.getItem('bsac_install_dismissed') === '1') {
+        this.installBannerDismissed = true;
+      }
+    } catch (e) {}
 
-    // Register service worker
+    // Register service worker with update handling
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => {
+          // Check for updates periodically
+          setInterval(() => {
+            reg.update().catch(() => {});
+          }, 60 * 60 * 1000);
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New version available — activate it
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            });
+          });
+          // Reload when controller changes so installed app gets new content
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
+        })
+        .catch(() => {});
     }
+
+    // IntersectionObserver: pause videos when off-screen
+    this.$nextTick(() => this.setupVideoObserver());
   },
   beforeUnmount() {
     window.removeEventListener('hashchange', this.handleHash);
     window.removeEventListener('popstate', this.handleHash);
     this.stopCamera();
+    if (this.videoObserver) {
+      this.videoObserver.disconnect();
+      this.videoObserver = null;
+    }
+    if (this.slideInterval) clearInterval(this.slideInterval);
+    if (this.headerTextInterval) clearInterval(this.headerTextInterval);
+  },
+  watch: {
+    currentView(newVal) {
+      if (newVal !== 'activities') {
+        this.pauseAllVideos();
+      } else {
+        this.$nextTick(() => this.setupVideoObserver());
+      }
+    }
   },
   methods: {
     goToView(view) {
@@ -1507,25 +1699,138 @@ createApp({
         this.isMessageSubmitting = false;
       }
     },
-    // ---- Single video play ----
-    onVideoPlay(event) {
+    // ---- Single video play + pause others ----
+    onVideoPlay(event, idx) {
       const current = event.target;
-      const allVideos = document.querySelectorAll('.video-card video');
+      const allVideos = document.querySelectorAll('.activity-video');
       allVideos.forEach(v => {
         if (v !== current && !v.paused) {
           v.pause();
         }
       });
     },
+    pauseAllVideos() {
+      document.querySelectorAll('.activity-video').forEach(v => {
+        if (!v.paused) v.pause();
+      });
+    },
+    setupVideoObserver() {
+      if (this.videoObserver) {
+        this.videoObserver.disconnect();
+      }
+      if (!('IntersectionObserver' in window)) return;
+      this.videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (!entry.isIntersecting && !video.paused) {
+            video.pause();
+          }
+        });
+      }, { threshold: 0.25, rootMargin: '0px' });
+      this.$nextTick(() => {
+        document.querySelectorAll('.activity-video').forEach(v => {
+          this.videoObserver.observe(v);
+        });
+      });
+    },
+    // ---- Like / Comment / Share (local only, no backend) ----
+    toggleLike(idx) {
+      const item = this.activitiesMedia[idx];
+      if (!item) return;
+      if (item.liked) {
+        item.liked = false;
+        item.likes = Math.max(0, (item.likes || 0) - 1);
+      } else {
+        item.liked = true;
+        item.likes = (item.likes || 0) + 1;
+        const msg = this.userName
+          ? `Thank you, ${this.userName}, for liking this video!`
+          : 'Thank you for liking this video!';
+        this.showNotification('Liked', msg, 'info');
+      }
+    },
+    toggleCommentBox(idx) {
+      const item = this.activitiesMedia[idx];
+      if (!item) return;
+      item.showComments = !item.showComments;
+    },
+    addComment(idx) {
+      const item = this.activitiesMedia[idx];
+      if (!item) return;
+      const text = (item.newComment || '').trim();
+      if (!text || text.length < 2) return;
+      const name = this.userName || 'Guest';
+      if (!item.comments) item.comments = [];
+      item.comments.push({ name, text });
+      item.newComment = '';
+      const msg = this.userName
+        ? `Thank you, ${this.userName}, for your comment!`
+        : 'Thank you for your comment!';
+      this.showNotification('Comment posted', msg, 'info');
+    },
+    async shareVideo(item) {
+      const shareData = {
+        title: item.title + ' | BSAC',
+        text: item.desc + ' — Watch more activities at Brethren Skills Acquisition Center.',
+        url: window.location.origin + '/#activities'
+      };
+      try {
+        if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+        } else if (navigator.share) {
+          await navigator.share(shareData);
+        } else {
+          // Fallback: copy link
+          await navigator.clipboard.writeText(shareData.url);
+          this.showNotification('Link copied', 'Activity link copied to clipboard. You can paste and share it.', 'info');
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+        try {
+          await navigator.clipboard.writeText(shareData.url);
+          this.showNotification('Link copied', 'Activity link copied to clipboard.', 'info');
+        } catch (e2) {
+          this.showNotification('Share', 'You can share this page URL: ' + shareData.url, 'info');
+        }
+      }
+    },
+    // ---- Name personalization ----
+    saveUserName() {
+      const name = (this.nameInput || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+      if (name) {
+        this.userName = name;
+        try { sessionStorage.setItem('bsac_user_name', name); } catch (e) {}
+      }
+      this.namePromptActive = false;
+      this.nameInput = '';
+    },
+    skipUserName() {
+      this.nameSkipped = true;
+      this.userName = '';
+      this.namePromptActive = false;
+      try {
+        sessionStorage.setItem('bsac_name_skipped', '1');
+        sessionStorage.removeItem('bsac_user_name');
+      } catch (e) {}
+    },
     // PWA Install
     async installApp() {
-      if (!this.deferredPrompt) return;
+      if (!this.deferredPrompt) {
+        this.showNotification('Install unavailable', 'Your browser does not support installing this app right now. On Chrome/Edge (Android or desktop) you can use the browser menu → Install App / Add to Home Screen.', 'info');
+        return;
+      }
       this.deferredPrompt.prompt();
       const { outcome } = await this.deferredPrompt.userChoice;
       if (outcome === 'accepted') {
         this.isInstalled = true;
+        this.showInstallBanner = false;
       }
       this.deferredPrompt = null;
+    },
+    dismissInstallBanner() {
+      this.showInstallBanner = false;
+      this.installBannerDismissed = true;
+      try { sessionStorage.setItem('bsac_install_dismissed', '1'); } catch (e) {}
     }
   }
 }).mount('#app');

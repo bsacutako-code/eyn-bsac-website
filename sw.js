@@ -1,81 +1,114 @@
-const CACHE_NAME = 'bsac-v1';
-const STATIC_ASSETS = [
+/* BSAC Service Worker - Cache versioned for reliable updates on Vercel */
+const CACHE_VERSION = 'bsac-v1.0.0';
+const CACHE_NAME = `bsac-cache-${CACHE_VERSION}`;
+
+/* Core app shell assets - keep minimal to avoid stale content */
+const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/logo.png',
   '/app.png',
-  '/welcome.png',
-  '/about.png',
-  '/bg1.png',
-  '/bg2.png',
-  '/bg3.png',
-  '/gallery1.png',
-  '/gallery2.png',
-  '/gallery3.png',
-  '/gallery4.png',
-  '/vid1.mp4',
-  '/vid2.mp4',
-  '/vid3.mp4'
+  '/logo.png'
 ];
 
-// Install – precache core assets
+/* Install: cache app shell */
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch(() => {});
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(APP_SHELL).catch(() => {}))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Activate – clean old caches
+/* Activate: clean old caches and claim clients so updates reach installed apps */
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
+    caches.keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key.startsWith('bsac-cache-') && key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+        )
+      )
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch – network-first for navigation, cache-first for static, never cache Google Forms
+/* Fetch strategy:
+   - Network-first for HTML/navigation (so Vercel updates appear)
+   - Cache-first for static same-origin assets
+   - Never cache Google Forms / external POST or third-party
+   - Bypass for non-GET
+*/
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const req = event.request;
+  const url = new URL(req.url);
 
-  // Never interfere with Google Forms submissions
-  if (url.hostname.includes('docs.google.com') || url.hostname.includes('google.com')) {
+  /* Never intercept non-GET (form submissions, etc.) */
+  if (req.method !== 'GET') {
     return;
   }
 
-  // Navigation requests – network first, fallback to cache
-  if (event.request.mode === 'navigate') {
+  /* Never cache Google Forms or external APIs */
+  if (
+    url.hostname.includes('docs.google.com') ||
+    url.hostname.includes('google.com') ||
+    url.hostname.includes('googleapis.com') ||
+    url.hostname.includes('gstatic.com') ||
+    url.hostname.includes('youtube.com') ||
+    url.hostname.includes('youtu.be') ||
+    url.hostname.includes('facebook.com') ||
+    url.hostname.includes('instagram.com') ||
+    url.hostname.includes('wa.me') ||
+    url.hostname.includes('t.me') ||
+    url.hostname.includes('cdn.') ||
+    url.hostname.includes('unpkg.com') ||
+    url.hostname.includes('cdnjs.cloudflare.com') ||
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com')
+  ) {
+    return;
+  }
+
+  /* Navigation / HTML: network-first so new deployments win */
+  if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
     event.respondWith(
-      fetch(event.request)
+      fetch(req)
         .then((response) => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
           return response;
         })
-        .catch(() => caches.match('/index.html'))
+        .catch(() =>
+          caches.match(req).then((cached) => cached || caches.match('/index.html'))
+        )
     );
     return;
   }
 
-  // Static assets – cache first
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
-        }
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-        return response;
-      }).catch(() => cached);
-    })
-  );
+  /* Same-origin static assets: cache-first with network fallback */
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      caches.match(req).then((cached) => {
+        if (cached) return cached;
+        return fetch(req)
+          .then((response) => {
+            if (response && response.status === 200 && response.type === 'basic') {
+              const copy = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(req, copy)).catch(() => {});
+            }
+            return response;
+          })
+          .catch(() => cached);
+      })
+    );
+  }
+});
+
+/* Allow page to force skipWaiting when a new SW is waiting */
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
