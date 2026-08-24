@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#8B2E2E" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<!-- SEO Meta Tags -->
+<title>BSAC | Brethren Skills Acquisition Center | EYN Church Utako Abuja</title>
+<meta name="description" content="Brethren Skills Acquisition Center (BSAC) provides professional skills acquisition empowerment at EYN Church Utako, Abuja. Fashion Design, Bakery and more." />
+<meta name="keywords" content="BSAC, Brethren Skills Acquisition Center, EYN Church Utako, Fashion Design, Bakery, Coding, Adult Education, Graphic Design, Skills Acquisition Abuja" />
+<meta name="author" content="BSAC" />
+<link rel="canonical" href="https://bsac-center.web.app/" />
+<meta name="robots" content="index, follow" />
+
+<!-- OpenGraph / Social Media SEO -->
+<meta property="og:title" content="BSAC | Brethren Skills Acquisition Center Abuja" />
+<meta property="og:description" content="Empowering lives through professional skills acquisition in Utako, Abuja. Register for Fashion Design, Bakery, Coding, Adult Education, and Graphic Design." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://bsac-center.web.app/" />
+<meta property="og:image" content="logo.png" />
+<meta property="og:site_name" content="BSAC - Brethren Skills Acquisition Center" />
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="BSAC | Brethren Skills Acquisition Center Abuja" />
+<meta name="twitter:description" content="Empowering lives through professional skills acquisition in Utako, Abuja." />
+<meta name="twitter:image" content="logo.png" />
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="app.png" />
+<link rel="icon" type="image/png" href="app.png" />
+
+<!-- Structured Data (JSON-LD for Google Search) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "Brethren Skills Acquisition Center",
+  "alternateName": "BSAC",
+  "url": "https://bsac-center.web.app/",
+  "logo": "https://bsac-center.web.app/logo.png",
+  "description": "Professional training center providing practical skills in Fashion Design, Bakery and more at EYN Church Utako, Abuja.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "No.1 Teslim O. Elias Street, Near Old CBN Quarters, EYN Church Utako",
+    "addressLocality": "Abuja",
+    "addressRegion": "FCT",
+    "addressCountry": "NG"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+2348032447550",
+    "contactType": "Admissions",
+    "email": "bsacutako@gmail.com"
+  },
+  "sameAs": [
+    "https://www.facebook.com/profile.php?id=61593087375331",
+    "https://www.instagram.com/brethrenskillaquisition",
+    "https://www.youtube.com/@Brethrenskillsacquisitioncente"
+  ]
+}
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Poppins', sans-serif; }
+
+  /* BACKGROUND FADE TRANSITION */
+  .bg-slideshow {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 2s ease-in-out;
+  }
+
+  /* TEXT ANIMATION */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-text {
+    animation: fadeInUp 1.2s ease-out forwards;
+  }
+
+  /* HEADER FADE ANIMATED TEXTS */
+  .fade-text-enter-active, .fade-text-leave-active {
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-text-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  .fade-text-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  /* PULSE & ICON ANIMATIONS */
+  .animated-icon {
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  .animated-icon:hover {
+    transform: scale(1.2) rotate(8deg);
+  }
+
+  /* View transitions */
+  .view-enter-active, .view-leave-active {
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .view-enter-from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .view-leave-to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  /* Install button subtle pulse */
+  @keyframes softPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(139, 46, 46, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(139, 46, 46, 0); }
+  }
+  .install-btn-pulse {
+    animation: softPulse 2.5s infinite;
+  }
+
+  /* Camera modal video */
+  #camera-preview {
+    transform: scaleX(-1); /* mirror for natural selfie feel */
+  }
+
+  /* Video cards keep aspect ratio and stay reasonably sized */
+  .video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 16 / 9;
+  }
+
+  /* PERFECT A4 PRINT MEDIA STYLES */
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+    #admission-form, #admission-form * {
+      visibility: visible !important;
+    }
+    #admission-form {
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: 210mm !important;
+      min-height: 297mm !important;
+      margin: 0 !important;
+      padding: 12mm 15mm !important;
+      box-shadow: none !important;
+      border: none !important;
+      background: white !important;
+      color: black !important;
+      font-size: 10.5pt !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+  }
+  [v-cloak] { display: none; }
+</style>
+</head>
+<body class="bg-[#F5F0E8] text-[#1B1B1B] overflow-x-hidden pt-20">
+
+<div id="app" v-cloak>
+
+  <!-- NON-WHITE STATIC HEADER TOP BAR -->
+  <header class="fixed top-0 left-0 w-full z-[1000] bg-[#8B2E2E] border-b border-[#6c2323] shadow-md no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <img src="logo.png" alt="BSAC Logo" class="h-11 w-11 rounded-full object-cover shadow border border-white/20 flex-shrink-0" />
+        <div class="h-8 overflow-hidden flex items-center min-w-0">
+          <transition name="fade-text" mode="out-in">
+            <span :key="headerTextIndex" class="text-xs md:text-sm font-bold text-[#F5F0E8] tracking-tight block truncate">
+              {{ headerTexts[headerTextIndex] }}
+            </span>
+          </transition>
+        </div>
+      </div>
+
+      <!-- Header Navigation (desktop + mobile friendly) -->
+      <nav class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+        <button @click="goToView('home')" 
+                class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition hidden sm:inline-flex items-center gap-1.5"
+                :class="{ 'text-white underline underline-offset-4': currentView === 'home' }"
+                aria-label="Home">
+          <i class="fas fa-home"></i> <span>Home</span>
+        </button>
+        <button @click="goToView('apply')" 
+                class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition hidden sm:inline-flex items-center gap-1.5"
+                :class="{ 'text-white underline underline-offset-4': currentView === 'apply' }"
+                aria-label="Apply / Enrol">
+          <i class="fas fa-user-plus"></i> <span>Enrol</span>
+        </button>
+        <button @click="goToView('activities')" 
+                class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition inline-flex items-center gap-1.5 px-2 py-1 rounded-full hover:bg-white/10"
+                :class="{ 'text-white bg-white/15': currentView === 'activities' }"
+                aria-label="See Our Activities">
+          <i class="fas fa-play-circle"></i> <span class="hidden xs:inline sm:inline">Activities</span>
+        </button>
+
+        <!-- Install PWA Button -->
+        <button v-if="deferredPrompt && !isInstalled" 
+                @click="installApp"
+                class="install-btn-pulse bg-[#C49A6C] text-[#1B1B1B] text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#b8895a] transition flex items-center gap-1.5 shadow"
+                aria-label="Install BSAC App">
+          <i class="fas fa-download"></i>
+          <span class="hidden sm:inline">Install</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 5s WELCOMING SPLASH SCREEN -->
+  <div v-if="welcomeActive" class="fixed inset-0 z-[100000] bg-black flex flex-col items-center justify-center text-center p-6 text-white overflow-hidden no-print">
+    <div class="relative flex items-center justify-center mb-8">
+      <img src="welcome.png" alt="Welcome" class="w-36 h-36 md:w-48 md:h-48 rounded-full object-cover shadow-2xl animate-pulse z-10 border-4 border-[#C49A6C]" />
+      <div class="absolute inset-0 rounded-full border-2 border-dashed border-[#8B2E2E] animate-spin" style="animation-duration: 10s;"></div>
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-wide text-white animate-text mb-3">
+      Welcome to <span class="text-[#C49A6C]">BSAC</span>
+    </h1>
+    <p class="text-sm md:text-lg text-gray-300 max-w-lg animate-text" style="animation-delay: 0.3s;">
+      Empowering Lives • Building Futures • Creating Leaders
+    </p>
+    <div class="mt-8 w-48 bg-gray-800 h-1.5 rounded-full overflow-hidden">
+      <div class="bg-[#8B2E2E] h-full animate-pulse w-full transition-all duration-[5000ms]"></div>
+    </div>
+  </div>
+
+  <!-- MODERN CUSTOM MODAL NOTIFICATION -->
+  <div v-if="customModal.show" class="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl transform transition-all animate-text" role="alertdialog" aria-modal="true">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" :class="customModal.type === 'error' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'">
+        <i :class="customModal.type === 'error' ? 'fas fa-exclamation-triangle text-2xl' : 'fas fa-info-circle text-2xl'"></i>
+      </div>
+      <h3 class="text-xl font-bold text-gray-800 mb-2">{{ customModal.title }}</h3>
+      <p class="text-gray-600 text-sm mb-6 leading-relaxed">{{ customModal.message }}</p>
+      <button @click="closeModal" class="w-full bg-[#8B2E2E] text-white py-3 rounded-full font-semibold hover:bg-[#6c2323] transition">
+        Dismiss
+      </button>
+    </div>
+  </div>
+
+  <!-- PAYMENT POPUP MODAL -->
+  <div v-if="paymentModalShow" class="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-md flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl transform transition-all animate-text my-8 border border-amber-200">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-[#8B2E2E]/10 text-[#8B2E2E] rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-wallet text-3xl"></i>
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#8B2E2E]">Do you wish to Pay Now?</h3>
+        <p class="text-xs text-gray-500 mt-1">kindly copy the account details below, make your payment and proceed to class.</p>
+      </div>
+
+      <!-- BANK ACCOUNT CARD -->
+      <div class="bg-[#F5F0E8] p-5 rounded-2xl border border-[#C49A6C]/30 mb-6 space-y-3 relative">
+        <div class="text-xs text-gray-500 font-bold uppercase tracking-wider">Fees Amount: ₦40,000</div>
+        
+        <div class="flex items-center justify-between bg-white p-3.5 rounded-xl border border-gray-200">
+          <div>
+            <span class="text-[10px] text-gray-400 font-bold uppercase block">Account Number</span>
+            <span class="text-xl font-extrabold text-gray-800 tracking-wider">1012248796</span>
+          </div>
+          <button @click="copyAccountNumber" class="bg-[#8B2E2E] text-white px-3.5 py-2 rounded-lg text-xs font-semibold hover:bg-[#6c2323] transition flex items-center gap-1.5 shadow">
+            <i class="fas" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+            <span>{{ copied ? 'Copied!' : 'Copy' }}</span>
+          </button>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-xl border border-gray-200">
+          <span class="text-[10px] text-gray-400 font-bold uppercase block">Account Name</span>
+          <span class="text-xs font-bold text-gray-800 leading-snug block mt-0.5">EYN CHURCH OF THE BRETHEREN IN NIGERIA(MCS ACCOUNT) <br> ZENITH BANK</span>
+        </div>
+      </div>
+
+      <!-- PROOF OF PAYMENT INSTRUCTIONS & LINKS -->
+      <div class="space-y-3 mb-6">
+        <p class="text-xs font-bold text-gray-700 text-center">Share your proof of payment via:</p>
+        <div class="grid grid-cols-2 gap-3">
+          <a :href="whatsappProofLink" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-emerald-600 text-white p-3 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow">
+            <i class="fab fa-whatsapp text-lg"></i> WhatsApp DM
+          </a>
+          <a :href="emailProofLink" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-amber-600 text-white p-3 rounded-xl font-bold text-xs hover:bg-amber-700 transition shadow">
+            <i class="fas fa-envelope text-lg"></i> Email Proof
+          </a>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="space-y-2">
+        <button @click="confirmPaymentAndGenerate" class="w-full bg-[#8B2E2E] text-white py-3.5 rounded-full font-bold hover:bg-[#6c2323] transition shadow-lg text-sm">
+          PRINT FORM
+        </button>
+        <button @click="paymentModalShow = false" class="w-full bg-gray-100 text-gray-600 py-2.5 rounded-full font-semibold hover:bg-gray-200 transition text-xs">
+          Back to Editing Form
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CAMERA CAPTURE MODAL ===================== -->
+  <div v-if="cameraModalOpen" class="fixed inset-0 z-[99998] bg-black/90 flex flex-col items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
+      <div class="bg-[#8B2E2E] text-white px-5 py-3 flex items-center justify-between">
+        <h3 class="font-bold text-sm">Capture Passport Photograph</h3>
+        <button @click="closeCamera" class="text-white/80 hover:text-white" aria-label="Close camera">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-4 space-y-4">
+        <!-- Live preview or captured image -->
+        <div class="relative bg-black rounded-xl overflow-hidden aspect-[3/4] max-h-[55vh] mx-auto flex items-center justify-center">
+          <video v-show="!capturedPhoto && cameraStream" ref="cameraVideo" id="camera-preview" autoplay playsinline muted class="w-full h-full object-cover"></video>
+          <img v-if="capturedPhoto" :src="capturedPhoto" alt="Captured passport" class="w-full h-full object-cover" />
+          <div v-if="!cameraStream && !capturedPhoto" class="text-white text-center p-6">
+            <i class="fas fa-camera text-4xl mb-3 opacity-50"></i>
+            <p class="text-sm">Starting camera…</p>
+          </div>
+        </div>
+
+        <p class="text-xs text-center text-gray-500">Position your face clearly inside the frame. Good lighting helps.</p>
+
+        <div class="flex flex-wrap gap-3 justify-center">
+          <button v-if="!capturedPhoto" @click="takePhoto" :disabled="!cameraStream"
+                  class="bg-[#8B2E2E] text-white px-6 py-2.5 rounded-full font-semibold text-sm hover:bg-[#6c2323] transition disabled:opacity-50 flex items-center gap-2">
+            <i class="fas fa-camera"></i> Capture
+          </button>
+          <button v-if="capturedPhoto" @click="retakePhoto"
+                  class="bg-gray-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-gray-800 transition flex items-center gap-2">
+            <i class="fas fa-redo"></i> Retake
+          </button>
+          <button v-if="capturedPhoto" @click="confirmPhoto"
+                  class="bg-emerald-600 text-white px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-emerald-700 transition flex items-center gap-2">
+            <i class="fas fa-check"></i> Use This Photo
+          </button>
+          <button @click="closeCamera" class="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-gray-200 transition">
+            Cancel
+          </button>
+        </div>
+
+        <p v-if="cameraError" class="text-xs text-red-600 text-center bg-red-50 p-2 rounded-lg">
+          {{ cameraError }} — You can still upload a photo instead.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== HOME VIEW ===================== -->
+  <div v-show="currentView === 'home'">
+    <!-- HERO SECTION WITH BG SLIDESHOW -->
+    <section id="home" class="relative h-screen overflow-hidden">
+      <div v-for="(bg, idx) in backgroundSlides" :key="bg" 
+           class="bg-slideshow" 
+           :style="{ backgroundImage: 'url(' + bg + ')' }"
+           :class="currentSlide === idx ? 'opacity-100' : 'opacity-0'">
+      </div>
+
+      <div class="absolute inset-0 bg-black/60"></div>
+
+      <div class="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-5">
+        <h1 class="text-3xl md:text-6xl font-extrabold mb-4 animate-text tracking-tight">Brethren Skills Acquisition Center</h1>
+        <h3 class="text-[#C49A6C] mb-4 text-lg md:text-xl font-semibold animate-text" style="animation-delay: 0.2s;">EYN LCC UTAKO ABUJA</h3>
+        <p class="max-w-2xl mb-8 opacity-90 animate-text" style="animation-delay: 0.4s;">Get skill, work and live (Exodus 35:35)</p>
+
+        <div class="flex gap-4 flex-wrap justify-center animate-text" style="animation-delay: 0.6s;">
+          <button @click="goToView('apply')" class="bg-[#8B2E2E] text-white px-8 py-3 rounded-full font-semibold hover:-translate-y-1 hover:shadow-xl transition">Apply Now</button>
+          <a href="#courses" class="bg-white text-[#8B2E2E] px-8 py-3 rounded-full font-semibold hover:-translate-y-1 transition">Explore Courses</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-5 px-6 md:px-16 py-14 no-print">
+      <div v-for="stat in stats" :key="stat.label" class="bg-white text-center p-7 rounded-2xl shadow-lg hover:-translate-y-2 transition">
+        <h2 class="text-[#8B2E2E] text-4xl font-bold">{{ stat.count }}</h2>
+        <p class="mt-2 text-gray-700 font-medium">{{ stat.label }}</p>
+      </div>
+      <div class="bg-white text-center p-7 rounded-2xl shadow-lg hover:-translate-y-2 transition">
+        <h2 class="text-[#8B2E2E] text-4xl font-bold">100%</h2>
+        <p class="mt-2 text-gray-700 font-medium">Practical Training</p>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="px-6 md:px-16 py-24 no-print">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          About BSAC
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10 items-center max-w-6xl mx-auto">
+        <div class="space-y-4 leading-relaxed text-gray-700">
+          <p class="text-lg">Brethren Skills Acquisition Center (BSAC) is an initiative of Church of the Brethren in Nigeria (EYN) LCC Utako, Abuja, dedicated to empowering individuals through comprehensive skills acquisition.</p>
+          <p>We equip students with high-demand practical skills including Fashion Design, Bakery, Coding, Adult Education, and Graphic Design that create sustainable opportunities for self reliance.</p>
+          <p>Our commitment is to raise highly skilled professionals capable of excelling and competing globally in their respective industries.</p>
+        </div>
+        <div class="flex justify-center">
+          <img src="about.png" alt="About BSAC" class="w-full max-w-md rounded-2xl p-4 bg-white shadow-lg object-contain" />
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES SECTION -->
+    <section id="courses" class="px-6 md:px-16 py-24 no-print">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          Our Courses
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 md:gap-8 max-w-6xl mx-auto">
+        <div v-for="course in courses" :key="course.title" 
+             @click="handleCourseClick(course.title)"
+             class="bg-white p-5 md:p-8 rounded-2xl text-center shadow-lg hover:-translate-y-2 transition cursor-pointer border border-transparent hover:border-[#8B2E2E] group flex flex-col justify-between">
+          <div>
+            <div class="w-14 h-14 md:w-20 md:h-20 mx-auto mb-4 bg-[#F5F0E8] rounded-full flex items-center justify-center group-hover:bg-[#8B2E2E] transition">
+              <i :class="'fas ' + course.icon" class="text-xl md:text-3xl text-[#8B2E2E] group-hover:text-white transition"></i>
+            </div>
+            <h3 class="font-bold text-base md:text-xl mb-2 text-gray-800">{{ course.title }}</h3>
+            <p class="text-xs md:text-sm text-gray-600 leading-relaxed hidden sm:block">{{ course.desc }}</p>
+          </div>
+          <span class="inline-block mt-4 text-xs font-semibold" :class="isCourseAvailable(course.title) ? 'text-[#8B2E2E] group-hover:underline' : 'text-amber-600 font-bold'">
+            {{ isCourseAvailable(course.title) ? 'Choose Skill →' : 'Coming Soon' }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="px-6 md:px-16 py-24 no-print">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          Training Gallery
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 md:gap-6 max-w-6xl mx-auto">
+        <div v-for="(img, idx) in gallery" :key="idx" 
+             @click="expandedImg = img" 
+             class="relative group overflow-hidden rounded-2xl shadow-lg bg-white h-48 md:h-72 cursor-pointer">
+          <img :src="img.src" :alt="img.title" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-end p-4">
+            <span class="text-white text-xs md:text-sm font-semibold">{{ img.title }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIGHTBOX / FULL EXPAND IMAGE -->
+      <div v-if="expandedImg" @click="expandedImg = null" class="fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center p-4 cursor-pointer">
+        <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
+          <img :src="expandedImg.src" :alt="expandedImg.title" class="max-w-full max-h-[80vh] object-contain rounded-xl shadow-2xl" />
+          <p class="text-white mt-4 font-semibold text-lg">{{ expandedImg.title }}</p>
+          <span class="text-gray-400 text-xs mt-1">Click anywhere to close</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATE -->
+    <section id="certificate" class="px-6 md:px-16 py-24 no-print">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          Certificate
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+      </div>
+
+      <div class="max-w-xl mx-auto bg-white p-10 rounded-2xl text-center shadow-lg">
+        <h3 class="font-semibold text-lg mb-3">Certificate Preview</h3>
+        <p class="text-gray-600 mb-6">Students who successfully complete the training program will receive an official certification.</p>
+        <button @click="showNotification('Info', 'Certificate portal will be available upon completion of training.')" class="bg-[#8B2E2E] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#6c2323] transition">Get Certificate</button>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="px-6 md:px-16 py-24 no-print">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          Frequently Asked Questions
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        <div v-for="item in faqs" :key="item.q" class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <button @click="item.open = !item.open" class="w-full text-left p-5 font-semibold flex justify-between items-center text-gray-800" :aria-expanded="item.open">
+            <span>{{ item.q }}</span>
+            <i :class="item.open ? 'fas fa-chevron-up text-[#8B2E2E]' : 'fas fa-chevron-down text-gray-400'"></i>
+          </button>
+          <div v-show="item.open" class="px-5 pb-5 text-gray-600 border-t pt-3 text-sm">
+            {{ item.a }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION WITH PRO ANIMATED ICONS -->
+    <section id="contact" class="px-6 md:px-16 py-24 no-print bg-white/50">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          Contact Us
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
+        <a href="https://wa.me/2348032447550" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center hover:shadow-2xl transition group" aria-label="Contact via WhatsApp">
+          <i class="fab fa-whatsapp text-4xl text-emerald-500 animated-icon mb-2"></i>
+          <span class="text-xs font-bold text-gray-700">WhatsApp</span>
+        </a>
+
+        <a href="https://t.me/+2348032447550" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center hover:shadow-2xl transition group" aria-label="Contact via Telegram">
+          <i class="fab fa-telegram text-4xl text-sky-500 animated-icon mb-2"></i>
+          <span class="text-xs font-bold text-gray-700">Telegram</span>
+        </a>
+
+        <a href="https://www.facebook.com/profile.php?id=61593087375331" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center hover:shadow-2xl transition group" aria-label="Contact via Facebook Messenger">
+          <i class="fab fa-facebook-messenger text-4xl text-blue-600 animated-icon mb-2"></i>
+          <span class="text-xs font-bold text-gray-700">Facebook DM</span>
+        </a>
+
+        <a href="https://www.instagram.com/brethrenskillaquisition?igsh=MTlyZmY2dmdmaDhkYQ==" target="_blank" rel="noopener noreferrer" class="bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center hover:shadow-2xl transition group" aria-label="Contact via Instagram">
+          <i class="fab fa-instagram text-4xl text-pink-600 animated-icon mb-2"></i>
+          <span class="text-xs font-bold text-gray-700">Instagram DM</span>
+        </a>
+
+        <a href="tel:08032447550" class="bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center hover:shadow-2xl transition group" aria-label="Call us">
+          <i class="fas fa-phone-alt text-4xl text-[#8B2E2E] animated-icon mb-2"></i>
+          <span class="text-xs font-bold text-gray-700">Call Us</span>
+        </a>
+
+        <a href="mailto:bsacutako@gmail.com" class="bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col items-center justify-center hover:shadow-2xl transition group" aria-label="Email us">
+          <i class="fas fa-envelope text-4xl text-amber-600 animated-icon mb-2"></i>
+          <span class="text-xs font-bold text-gray-700">Email</span>
+        </a>
+      </div>
+
+      <!-- Location card -->
+      <div class="mt-10 max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-lg flex items-start gap-4">
+        <div class="w-12 h-12 rounded-full bg-[#F5F0E8] flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-map-marker-alt text-[#8B2E2E] text-xl"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-800 mb-1">Our Location</h4>
+          <p class="text-sm text-gray-600 leading-relaxed">No.1 Teslim O. Elias Street, Near Old CBN Quarters, EYN Church Utako, Abuja, FCT, Nigeria</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEND US A MESSAGE SECTION ===================== -->
+    <section id="send-message" class="px-6 md:px-16 py-20 no-print bg-[#F5F0E8]">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold inline-block relative">
+          Send Us a Message
+          <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-3"></span>
+        </h2>
+        <p class="text-gray-600 mt-3 text-sm max-w-md mx-auto">Have a question or enquiry? Send us a message and we will respond as soon as possible.</p>
+      </div>
+
+      <div class="max-w-xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100">
+        <form @submit.prevent="submitMessageForm" class="space-y-5">
+          <div class="space-y-2">
+            <label for="msg-email" class="text-xs font-bold uppercase text-gray-600">Email Address *</label>
+            <input id="msg-email" v-model="messageForm.email" type="email" placeholder="your.email@example.com" required autocomplete="email"
+                   class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E] transition"
+                   :class="{ 'border-red-400': messageErrors.email }" />
+            <p v-if="messageErrors.email" class="text-xs text-red-600 mt-1">{{ messageErrors.email }}</p>
+          </div>
+
+          <div class="space-y-2">
+            <label for="msg-body" class="text-xs font-bold uppercase text-gray-600">Your Message *</label>
+            <textarea id="msg-body" v-model="messageForm.message" rows="5" placeholder="Type your message here…" required
+                      class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E] transition resize-y min-h-[120px]"
+                      :class="{ 'border-red-400': messageErrors.message }"></textarea>
+            <p v-if="messageErrors.message" class="text-xs text-red-600 mt-1">{{ messageErrors.message }}</p>
+          </div>
+
+          <button type="submit" :disabled="isMessageSubmitting"
+                  class="w-full bg-[#8B2E2E] text-white py-3.5 rounded-full font-bold hover:bg-[#6c2323] transition shadow-lg disabled:opacity-60 flex items-center justify-center gap-2">
+            <i v-if="isMessageSubmitting" class="fas fa-spinner fa-spin"></i>
+            {{ isMessageSubmitting ? 'Sending…' : 'Send Message' }}
+          </button>
+
+          <p v-if="messageSuccess" class="text-center text-sm text-emerald-600 font-semibold bg-emerald-50 p-3 rounded-xl">
+            <i class="fas fa-check-circle mr-1"></i> Message sent successfully. We will get back to you soon.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#8B2E2E] text-[#F5F0E8] pt-14 pb-28 no-print">
+      <div class="max-w-6xl mx-auto px-6 md:px-16">
+        <div class="grid md:grid-cols-3 gap-10 mb-10">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <img src="logo.png" alt="BSAC Logo" class="h-12 w-12 rounded-full object-cover border border-white/20" />
+              <div>
+                <h3 class="font-bold text-lg leading-tight">BSAC</h3>
+                <p class="text-xs text-[#C49A6C]">Brethren Skills Acquisition Center</p>
+              </div>
+            </div>
+            <p class="text-sm text-white/80 leading-relaxed">Empowering lives through practical skills at EYN Church LCC Utako, Abuja.</p>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-4 text-[#C49A6C]">Quick Links</h4>
+            <ul class="space-y-2 text-sm">
+              <li><button @click="goToView('home')" class="hover:text-white transition">Home</button></li>
+              <li><button @click="goToView('apply')" class="hover:text-white transition">Apply / Enrol</button></li>
+              <li><button @click="goToView('activities')" class="hover:text-white transition">Our Activities</button></li>
+              <li><a href="#about" class="hover:text-white transition">About</a></li>
+              <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-4 text-[#C49A6C]">Contact</h4>
+            <ul class="space-y-2 text-sm text-white/80">
+              <li class="flex items-center gap-2"><i class="fas fa-phone-alt text-[#C49A6C]"></i> 08032447550</li>
+              <li class="flex items-center gap-2"><i class="fas fa-envelope text-[#C49A6C]"></i> bsacutako@gmail.com</li>
+              <li class="flex items-start gap-2"><i class="fas fa-map-marker-alt text-[#C49A6C] mt-1"></i> EYN Church Utako, Abuja</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-white/20 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/70">
+          <p>© {{ new Date().getFullYear() }} Brethren Skills Acquisition Center (BSAC). All rights reserved.</p>
+          <p>
+            Designed and Developed by 
+            <a href="https://wa.me/2349025552740?text=Hi%20Jonathan%2C%20i%20learned%20that%20you%20developed%20the%20BSAC%20website.%20please%20can%20you%20do%20mine%3F" 
+               target="_blank" rel="noopener noreferrer"
+               class="text-[#C49A6C] font-semibold hover:underline">
+              Jonathan David
+            </a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===================== APPLICATION VIEW ===================== -->
+  <div v-show="currentView === 'apply'" class="min-h-screen pb-28">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <!-- Back + Title -->
+      <div class="flex items-center justify-between mb-8 no-print">
+        <button @click="goToView('home')" class="inline-flex items-center gap-2 text-[#8B2E2E] font-semibold text-sm hover:underline">
+          <i class="fas fa-arrow-left"></i> Back to Homepage
+        </button>
+        <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Application</span>
+      </div>
+
+      <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold">Admission Application</h1>
+        <p class="text-gray-600 mt-2 text-sm">Complete the form below to apply for a skills programme at BSAC</p>
+        <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-4"></span>
+      </div>
+
+      <!-- FORM (only when not showing preview) -->
+      <form v-if="!showPreview" @submit.prevent="submitForm" class="bg-white p-6 md:p-10 rounded-2xl shadow-xl space-y-6">
+        <div class="text-center border-b pb-6">
+          <img src="logo.png" alt="BSAC Logo" class="h-16 w-16 mx-auto mb-3 rounded-full object-cover shadow" />
+          <h3 class="font-bold text-xl text-[#8B2E2E]">EYN CHURCH OF THE BRETHREN IN NIGERIA LCC UTAKO</h3>
+          <h4 class="font-semibold text-gray-800">BRETHREN SKILLS ACQUISITION CENTER</h4>
+          <p class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-bold">Admission Application Form</p>
+        </div>
+
+        <!-- PASSPORT SYSTEM -->
+        <div class="flex flex-col items-center justify-center my-4 space-y-4">
+          <div class="w-36 h-44 border-2 border-dashed border-[#8B2E2E] rounded-xl flex flex-col items-center justify-center text-center p-2 relative overflow-hidden bg-gray-50">
+            <img v-if="passportImage" :src="passportImage" alt="Passport preview" class="w-full h-full object-cover" />
+            <div v-else class="flex flex-col items-center px-2">
+              <i class="fas fa-id-card text-3xl text-[#8B2E2E] mb-2"></i>
+              <span class="text-xs font-medium text-gray-600">Passport Photograph *</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3 justify-center">
+            <button type="button" @click="triggerFileUpload" class="bg-[#8B2E2E] text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-[#6c2323] transition flex items-center gap-2">
+              <i class="fas fa-upload"></i> Upload Photo
+            </button>
+            <button type="button" @click="openCamera" class="bg-gray-800 text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-gray-900 transition flex items-center gap-2">
+              <i class="fas fa-camera"></i> Take Photo
+            </button>
+            <button v-if="passportImage" type="button" @click="removePassport" class="bg-red-100 text-red-700 px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-200 transition flex items-center gap-2">
+              <i class="fas fa-trash-alt"></i> Remove
+            </button>
+          </div>
+          <input type="file" ref="fileInput" accept="image/jpeg,image/png,image/webp,image/*" class="hidden" @change="onPassportSelected" />
+          <p class="text-[11px] text-gray-500 text-center max-w-xs">JPG, PNG or WEBP. Clear front-facing photo recommended. Camera works on most modern phones and computers.</p>
+        </div>
+
+        <!-- FULL NAME SPLIT -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase text-gray-600">Full Name *</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <input v-model="form.firstName" type="text" placeholder="First Name *" required autocomplete="given-name" class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+            </div>
+            <div>
+              <input v-model="form.middleName" type="text" placeholder="Middle Name (optional)" autocomplete="additional-name" class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+            </div>
+            <div>
+              <input v-model="form.surname" type="text" placeholder="Surname *" required autocomplete="family-name" class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase text-gray-600">Street Address *</label>
+          <input v-model="form.address" type="text" placeholder="Street Address *" required autocomplete="street-address" class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+        </div>
+
+        <!-- STATE OF ORIGIN & GENDER -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2 md:col-span-1">
+            <label class="text-xs font-bold uppercase text-gray-600">State *</label>
+            <input v-model="form.state" type="text" placeholder="State *" required class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+          </div>
+          <div class="space-y-2 md:col-span-1">
+            <label class="text-xs font-bold uppercase text-gray-600">LGA *</label>
+            <input v-model="form.lga" type="text" placeholder="LGA *" required class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+          </div>
+          <div class="space-y-2 md:col-span-1">
+            <label class="text-xs font-bold uppercase text-gray-600">Gender *</label>
+            <select v-model="form.gender" required class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PHONE & EMAIL -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase text-gray-600">Phone Number *</label>
+            <input v-model="form.phone" type="tel" placeholder="08032447550 *" required autocomplete="tel"
+                   class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]"
+                   :class="{ 'border-red-400': formErrors.phone }" />
+            <p v-if="formErrors.phone" class="text-xs text-red-600">{{ formErrors.phone }}</p>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs font-bold uppercase text-gray-600">Email Address *</label>
+            <input v-model="form.email" type="email" placeholder="bsacutako@gmail.com *" required autocomplete="email"
+                   class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]"
+                   :class="{ 'border-red-400': formErrors.email }" />
+            <p v-if="formErrors.email" class="text-xs text-red-600">{{ formErrors.email }}</p>
+          </div>
+        </div>
+
+        <!-- SKILLS APPLIED FOR -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase text-gray-600">Skills Applied For *</label>
+          <select v-model="form.course" @change="validateCourseSelection" required class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]">
+            <option value="">Select Course</option>
+            <option value="Fashion Design">Fashion Design</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Coding" disabled>Coding (Coming Soon)</option>
+            <option value="Adult Education" disabled>Adult Education (Coming Soon)</option>
+            <option value="Graphic Design" disabled>Graphic Design (Coming Soon)</option>
+          </select>
+        </div>
+
+        <!-- PREVIOUS SKILLS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold uppercase text-gray-600">Any Previous Skills Acquired?</label>
+          <div class="flex items-center gap-6 mb-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" v-model="form.hasPreviousSkills" value="Yes" class="accent-[#8B2E2E]" /> Yes
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" v-model="form.hasPreviousSkills" value="No" class="accent-[#8B2E2E]" /> No
+            </label>
+          </div>
+          <input v-if="form.hasPreviousSkills === 'Yes'" v-model="form.previousSkills" type="text" placeholder="If yes, which skills?" class="w-full p-3.5 border border-gray-300 rounded-xl outline-none focus:border-[#8B2E2E]" />
+        </div>
+
+        <!-- NOTE -->
+        <p class="text-xs italic text-gray-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+          <strong>Note:</strong> As a faith based institute, our students are expected to conduct themselves in a manner that is pleasing unto the Lord.
+        </p>
+
+        <button type="submit" :disabled="isSubmitting" class="w-full bg-[#8B2E2E] text-white py-4 rounded-full font-bold text-lg hover:bg-[#6c2323] transition shadow-lg disabled:opacity-60">
+          {{ isSubmitting ? 'Processing…' : 'Submit & Generate Admission Form' }}
+        </button>
+      </form>
+
+      <!-- PRINTABLE PREVIEW (same as original) -->
+      <div v-if="showPreview && student" class="mt-6">
+        <div class="text-center mb-8 no-print flex flex-wrap justify-center gap-4 bg-white p-6 rounded-2xl shadow-lg border border-emerald-100">
+          <div class="w-full mb-2">
+            <i class="fas fa-check-circle text-4xl text-emerald-500 mb-2"></i>
+            <h3 class="text-xl font-bold text-gray-800">Application Completed Successfully!</h3>
+            <p class="text-xs text-gray-500">You can now print, download, or restart your application below.</p>
+          </div>
+          <button @click="printReceipt" class="bg-[#8B2E2E] text-white px-6 py-3 rounded-full font-bold shadow-md hover:bg-[#6c2323] transition flex items-center gap-2">
+            <i class="fas fa-print"></i> Print / Download Form (A4)
+          </button>
+          <button @click="restartApplication" class="bg-gray-800 text-white px-6 py-3 rounded-full font-bold shadow-md hover:bg-gray-900 transition flex items-center gap-2">
+            <i class="fas fa-redo"></i> Restart Application
+          </button>
+        </div>
+
+        <div id="admission-form" class="bg-white p-8 md:p-12 rounded-2xl shadow-2xl border border-gray-200 text-black max-w-[210mm] mx-auto">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex items-center gap-4">
+              <img src="logo.png" alt="BSAC Logo" class="w-20 h-20 rounded-full object-cover border border-gray-200 flex-shrink-0" />
+              <div>
+                <h1 class="text-xl md:text-2xl font-extrabold text-[#8B2E2E] tracking-tight uppercase leading-tight">EYN CHURCH OF THE BRETHREN IN NIGERIA LCC UTAKO</h1>
+                <h2 class="text-lg md:text-xl font-bold text-gray-800 uppercase leading-snug">BRETHREN SKILLS ACQUISITION CENTER</h2>
+              </div>
+            </div>
+            <div class="w-[110px] h-[135px] border-2 border-gray-800 flex items-center justify-center overflow-hidden relative bg-gray-50 flex-shrink-0">
+              <img v-if="student.passport" :src="student.passport" class="w-full h-full object-cover" alt="Passport" />
+              <span v-else class="text-xs font-bold text-center text-gray-500 p-2">Passport Photo</span>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 text-white text-center py-1.5 font-bold text-lg uppercase tracking-wider mb-6">
+            ADMISSION FORM
+          </div>
+
+          <div class="space-y-4 text-sm leading-relaxed">
+            <div class="flex justify-between border-b border-gray-400 pb-1">
+              <div><span class="font-bold">Full Name:</span> {{ student.firstName }} {{ student.middleName }} {{ student.surname }}</div>
+              <div><span class="font-bold">Date:</span> {{ student.today }}</div>
+            </div>
+            <div class="border-b border-gray-400 pb-1">
+              <span class="font-bold">Address:</span> {{ student.address }}
+            </div>
+            <div class="grid grid-cols-3 border-b border-gray-400 pb-1">
+              <div><span class="font-bold">State of Origin:</span> {{ student.state }}</div>
+              <div><span class="font-bold">LGA:</span> {{ student.lga }}</div>
+              <div><span class="font-bold">Gender:</span> {{ student.gender }}</div>
+            </div>
+            <div class="grid grid-cols-2 border-b border-gray-400 pb-1">
+              <div><span class="font-bold">Phone:</span> {{ student.phone }}</div>
+              <div><span class="font-bold">Email:</span> {{ student.email }}</div>
+            </div>
+            <div class="border-b border-gray-400 pb-1">
+              <span class="font-bold">Skills applied for:</span> <span class="bg-gray-100 px-2 py-0.5 rounded font-semibold text-[#8B2E2E]">{{ student.course }}</span>
+            </div>
+            <div class="border-b border-gray-400 pb-1">
+              <span class="font-bold">Any previous skills acquired?</span> {{ student.hasPreviousSkills || 'No' }}
+              <span v-if="student.previousSkills"> - {{ student.previousSkills }}</span>
+            </div>
+            <p class="text-xs italic text-gray-700 pt-2">
+              <strong>Note:</strong> As a faith based institute, our students are expected to conduct themselves in a manner that is pleasing unto the Lord.
+            </p>
+
+            <div class="pt-6">
+              <div class="bg-gray-800 text-white text-center py-1 font-bold text-sm uppercase tracking-wider mb-4">
+                UNDERTAKING
+              </div>
+              <p class="text-xs text-justify leading-relaxed">
+                I <span class="font-bold underline px-2">{{ student.firstName }} {{ student.surname }}</span> hereby undertake that as a trainee of the above center will abide by all instructions and pay all the necessary fees of the training.
+              </p>
+              <div class="flex justify-between items-end mt-12 pt-4">
+                <div class="w-1/2 border-t border-black text-center pt-1 text-xs font-bold">Signature</div>
+                <div class="w-1/3 border-t border-black text-center pt-1 text-xs font-bold">Date: {{ student.today }}</div>
+              </div>
+            </div>
+
+            <div class="mt-8 text-center">
+              <span class="bg-black text-white text-xs px-4 py-1 font-bold uppercase tracking-widest rounded-full">
+                Motto: Get skill, work and live (Exodus 35:35)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITIES VIEW ===================== -->
+  <div v-show="currentView === 'activities'" class="min-h-screen pb-28">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex items-center justify-between mb-8 no-print">
+        <button @click="goToView('home')" class="inline-flex items-center gap-2 text-[#8B2E2E] font-semibold text-sm hover:underline">
+          <i class="fas fa-arrow-left"></i> Back to Homepage
+        </button>
+        <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Activities</span>
+      </div>
+
+      <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold">See Our Activities</h1>
+        <p class="text-gray-600 mt-2 text-sm max-w-xl mx-auto">Watch moments from our training sessions, practical classes and community impact.</p>
+        <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-4"></span>
+      </div>
+
+      <!-- Media Cards — rows, professional sizing, correct aspect ratio -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+        <div v-for="(item, idx) in activitiesMedia" :key="idx" class="video-card bg-white rounded-2xl shadow-lg overflow-hidden hover:-translate-y-1 transition">
+          <div class="aspect-video bg-gray-900 relative">
+            <video :src="item.src" controls preload="metadata" playsinline
+                   class="w-full h-full object-cover"
+                   @play="onVideoPlay($event)">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-gray-800 text-sm">{{ item.title }}</h3>
+            <p class="text-xs text-gray-500 mt-1">{{ item.desc }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- YouTube CTA + Social -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-100">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fab fa-youtube text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Watch More on YouTube</h3>
+        <p class="text-sm text-gray-600 mb-6 max-w-md mx-auto">Explore additional training highlights, student projects and centre updates on our official YouTube channel.</p>
+        <a href="https://www.youtube.com/@Brethrenskillsacquisitioncente" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 bg-red-600 text-white px-8 py-3 rounded-full font-bold hover:bg-red-700 transition shadow-lg">
+          <i class="fab fa-youtube text-lg"></i>
+          SEE MORE ACTIVITIES ON YOUTUBE
+        </a>
+
+        <!-- Social icons row -->
+        <div class="mt-8 pt-6 border-t border-gray-100">
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4">Follow Us</p>
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="https://www.youtube.com/@Brethrenskillsacquisitioncente" target="_blank" rel="noopener noreferrer"
+               class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition shadow" title="YouTube" aria-label="YouTube channel">
+              <i class="fab fa-youtube text-xl"></i>
+            </a>
+            <a href="https://www.instagram.com/brethrenskillaquisition" target="_blank" rel="noopener noreferrer"
+               class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center hover:bg-pink-600 hover:text-white transition shadow" title="Instagram" aria-label="Instagram">
+              <i class="fab fa-instagram text-xl"></i>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61593087375331" target="_blank" rel="noopener noreferrer"
+               class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow" title="Facebook" aria-label="Facebook">
+              <i class="fab fa-facebook-f text-xl"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATIC BOTTOM APP NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 z-[9999] py-2 px-2 flex justify-around items-center shadow-lg no-print" aria-label="Main navigation">
+    <button @click="goToView('home')" class="flex flex-col items-center transition px-2 py-1 rounded-lg" :class="currentView === 'home' ? 'text-[#8B2E2E]' : 'text-gray-600 hover:text-[#8B2E2E]'" aria-label="Home" :aria-current="currentView === 'home' ? 'page' : null">
+      <i class="fas fa-home text-xl"></i>
+      <span class="text-[10px] font-bold uppercase mt-1">Home</span>
+    </button>
+    <button @click="goToView('apply')" class="flex flex-col items-center transition px-2 py-1 rounded-lg" :class="currentView === 'apply' ? 'text-[#8B2E2E]' : 'text-gray-600 hover:text-[#8B2E2E]'" aria-label="Enrol" :aria-current="currentView === 'apply' ? 'page' : null">
+      <i class="fas fa-user-plus text-xl"></i>
+      <span class="text-[10px] font-bold uppercase mt-1">Enrol</span>
+    </button>
+    <button @click="goToView('activities')" class="flex flex-col items-center transition px-2 py-1 rounded-lg" :class="currentView === 'activities' ? 'text-[#8B2E2E]' : 'text-gray-600 hover:text-[#8B2E2E]'" aria-label="Activities" :aria-current="currentView === 'activities' ? 'page' : null">
+      <i class="fas fa-play-circle text-xl"></i>
+      <span class="text-[10px] font-bold uppercase mt-1">Activities</span>
+    </button>
+    <a href="#contact" @click="goToView('home')" class="flex flex-col items-center text-gray-600 hover:text-[#8B2E2E] transition px-2 py-1 rounded-lg" aria-label="Contact">
+      <i class="fas fa-address-book text-xl"></i>
+      <span class="text-[10px] font-bold uppercase mt-1">Contact</span>
+    </a>
+  </nav>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+
+// Google Forms endpoint & field mapping for silent background submission
+// DO NOT CHANGE — preserved exactly from original working implementation
+const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdgmtRp02Pc-xjvwmpiLETUE89cr6q_cLcDjAvmqUiMdVS0wg/formResponse';
+const GOOGLE_FORM_ENTRY_MAP = {
+  firstName: 'entry.625004985',
+  middleName: 'entry.164063823',
+  surname: 'entry.1293917626',
+  email: 'entry.1768311763',
+  phone: 'entry.1041734720',
+  address: 'entry.995585847',
+  state: 'entry.1842412526',
+  gender: 'entry.1241311783',
+  lga: 'entry.926899023',
+  course: 'entry.1883109185',
+  hasPreviousSkills: 'entry.447640198',
+  previousSkills: 'entry.1324311296'
+};
+
+// Public message form (silent)
+const MESSAGE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe9WMbVkbbHtdbpDhWJh-KS3rkJ1NUK6_jG7_4mu_ahXbxCqg/formResponse';
+const MESSAGE_FORM_ENTRIES = {
+  email: 'entry.2144367608',
+  message: 'entry.1843480981'
+};
+
+createApp({
+  data() {
+    return {
+      currentView: 'home',
+      welcomeActive: true,
+      currentSlide: 0,
+      backgroundSlides: ['bg1.png', 'bg2.png', 'bg3.png'],
+      slideInterval: null,
+      headerTextIndex: 0,
+      headerTextInterval: null,
+      headerTexts: [
+        'BRETHREN SKILLS ACQUISITION CENTER',
+        'EMPOWERING LIVES THROUGH PRACTICAL SKILL AQUISITION',
+        'EYN CHURCH LCC UTAKO ABUJA',
+        'GET SKILL, WORK AND LIVE (EXODUS 35:35)'
+      ],
+      expandedImg: null,
+      passportImage: null,
+      paymentModalShow: false,
+      copied: false,
+      showPreview: false,
+      student: null,
+      isSubmitting: false,
+      customModal: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'info'
+      },
+      form: {
+        firstName: '',
+        middleName: '',
+        surname: '',
+        address: '',
+        state: '',
+        lga: '',
+        gender: '',
+        phone: '',
+        email: '',
+        course: '',
+        hasPreviousSkills: 'No',
+        previousSkills: ''
+      },
+      formErrors: {
+        email: '',
+        phone: ''
+      },
+      // Message form
+      messageForm: {
+        email: '',
+        message: ''
+      },
+      messageErrors: {
+        email: '',
+        message: ''
+      },
+      isMessageSubmitting: false,
+      messageSuccess: false,
+      // Camera system
+      cameraModalOpen: false,
+      cameraStream: null,
+      capturedPhoto: null,
+      cameraError: null,
+      // PWA
+      deferredPrompt: null,
+      isInstalled: false,
+      activitiesMedia: [
+        { src: 'vid1.mp4', title: 'Fashion Design Practical', desc: 'Hands-on garment construction session' },
+        { src: 'vid2.mp4', title: 'Bakery Class Highlights', desc: 'Students mastering baking techniques' },
+        { src: 'vid3.mp4', title: 'Centre Activities Overview', desc: 'Moments from training and community' }
+      ],
+      stats: [
+        { label: 'Trained Graduates', count: '100+' },
+        { label: 'Active Courses', count: '2' },
+        { label: 'Expert Instructors', count: '5+' }
+      ],
+      courses: [
+        { title: 'Fashion Design', icon: 'fa-cut', desc: 'Comprehensive tailoring, pattern drafting, and garment construction.' },
+        { title: 'Bakery', icon: 'fa-bread-slice', desc: 'Practical baking techniques for bread, cakes, pastries, and confectioneries.' },
+        { title: 'Coding', icon: 'fa-code', desc: 'Modern web development, programming concepts, and practical software design.' },
+        { title: 'Adult Education', icon: 'fa-book-reader', desc: 'Functional literacy, numeracy, and personal development classes.' },
+        { title: 'Graphic Design', icon: 'fa-palette', desc: 'Visual branding, digital content creation, and graphic layout techniques.' }
+      ],
+      gallery: [
+        { src: 'gallery1.png', title: 'Fashion Workshop Practical' },
+        { src: 'gallery2.png', title: 'Baking Practical Class' },
+        { src: 'gallery3.png', title: 'Computer Training Session' },
+        { src: 'gallery4.png', title: 'Adult Education Literacy' }
+      ],
+      faqs: [
+        { q: 'Who can apply for BSAC training programs?', a: 'BSAC programs are open to anyone looking to acquire practical skills for self-reliance and career empowerment.', open: false },
+        { q: 'Where is BSAC located?', a: 'BSAC is located at EYN Church Utako, No.1 Teslim O. Elias Street, Near Old CBN Quarters, Utako, Abuja.', open: false },
+        { q: 'Will I receive a certificate after training?', a: 'Yes, students who successfully complete their coursework and practical assessments will receive an official certification.', open: false }
+      ]
+    }
+  },
+  computed: {
+    whatsappProofLink() {
+      const text = encodeURIComponent(`Hello BSAC, I have made my payment for application under the name ${this.form.firstName} ${this.form.surname} for ${this.form.course}. Attached is my proof of payment.`);
+      return `https://wa.me/2348032447550?text=${text}`;
+    },
+    emailProofLink() {
+      const subject = encodeURIComponent(`Payment Proof: BSAC Application - ${this.form.firstName} ${this.form.surname}`);
+      const body = encodeURIComponent(`Hello BSAC Team,\n\nI have completed my admission form payment for ${this.form.course}.\n\nApplicant: ${this.form.firstName} ${this.form.surname}\nPhone: ${this.form.phone}\n\nPlease find attached my payment proof.\n\nThank you.`);
+      return `mailto:bsacutako@gmail.com?subject=${subject}&body=${body}`;
+    }
+  },
+  mounted() {
+    // Hide splash screen after 5 seconds
+    setTimeout(() => {
+      this.welcomeActive = false;
+    }, 5000);
+
+    // Background Slideshow
+    this.slideInterval = setInterval(() => {
+      this.currentSlide = (this.currentSlide + 1) % this.backgroundSlides.length;
+    }, 4000);
+
+    // Animated Header Texts
+    this.headerTextInterval = setInterval(() => {
+      this.headerTextIndex = (this.headerTextIndex + 1) % this.headerTexts.length;
+    }, 3500);
+
+    // Hash-based SPA routing + browser back/forward support
+    this.handleHash();
+    window.addEventListener('hashchange', this.handleHash);
+    window.addEventListener('popstate', this.handleHash);
+
+    // PWA install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+    });
+    window.addEventListener('appinstalled', () => {
+      this.isInstalled = true;
+      this.deferredPrompt = null;
+    });
+    // Detect already installed (standalone)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      this.isInstalled = true;
+    }
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('hashchange', this.handleHash);
+    window.removeEventListener('popstate', this.handleHash);
+    this.stopCamera();
+  },
+  methods: {
+    goToView(view) {
+      this.currentView = view;
+      const hash = view === 'home' ? '#home' : `#${view}`;
+      if (location.hash !== hash) {
+        history.pushState({ view }, '', hash);
+      }
+      // Update document title for better UX / SEO feel
+      const titles = {
+        home: 'BSAC | Brethren Skills Acquisition Center | EYN Church Utako Abuja',
+        apply: 'Apply Now | BSAC Admission Form',
+        activities: 'Our Activities | BSAC'
+      };
+      document.title = titles[view] || titles.home;
+      // Scroll to top of the new view
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    handleHash() {
+      const hash = (location.hash || '#home').replace('#', '') || 'home';
+      if (['home', 'apply', 'activities'].includes(hash)) {
+        this.currentView = hash;
+      } else {
+        this.currentView = 'home';
+      }
+    },
+    showNotification(title, message, type = 'info') {
+      this.customModal = { show: true, title, message, type };
+    },
+    closeModal() {
+      this.customModal.show = false;
+    },
+    // ---- Passport Upload ----
+    triggerFileUpload() {
+      this.$refs.fileInput.click();
+    },
+    onPassportSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        this.showNotification('Invalid File', 'Please select a valid image (JPG, PNG or WEBP).', 'error');
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        this.showNotification('File Too Large', 'Please choose an image smaller than 8 MB.', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        this.passportImage = event.target.result;
+      };
+      reader.readAsDataURL(file);
+      // reset input so same file can be re-selected later
+      e.target.value = '';
+    },
+    removePassport() {
+      this.passportImage = null;
+    },
+    // ---- Camera Capture ----
+    async openCamera() {
+      this.cameraError = null;
+      this.capturedPhoto = null;
+      this.cameraModalOpen = true;
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('Camera API not supported on this device/browser.');
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+          audio: false
+        });
+        this.cameraStream = stream;
+        this.$nextTick(() => {
+          const video = this.$refs.cameraVideo;
+          if (video) {
+            video.srcObject = stream;
+            video.play().catch(() => {});
+          }
+        });
+      } catch (err) {
+        this.cameraError = err.message || 'Unable to access camera';
+        this.cameraStream = null;
+      }
+    },
+    takePhoto() {
+      const video = this.$refs.cameraVideo;
+      if (!video || !this.cameraStream) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 480;
+      canvas.height = video.videoHeight || 640;
+      const ctx = canvas.getContext('2d');
+      // Mirror to match preview
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      this.capturedPhoto = canvas.toDataURL('image/jpeg', 0.9);
+      this.stopCameraStreamOnly();
+    },
+    retakePhoto() {
+      this.capturedPhoto = null;
+      this.openCamera();
+    },
+    confirmPhoto() {
+      if (this.capturedPhoto) {
+        this.passportImage = this.capturedPhoto;
+      }
+      this.closeCamera();
+    },
+    stopCameraStreamOnly() {
+      if (this.cameraStream) {
+        this.cameraStream.getTracks().forEach(t => t.stop());
+        this.cameraStream = null;
+      }
+    },
+    closeCamera() {
+      this.stopCameraStreamOnly();
+      this.cameraModalOpen = false;
+      this.capturedPhoto = null;
+      this.cameraError = null;
+    },
+    stopCamera() {
+      this.stopCameraStreamOnly();
+    },
+    // ---- Courses ----
+    isCourseAvailable(courseTitle) {
+      return courseTitle === 'Fashion Design' || courseTitle === 'Bakery';
+    },
+    handleCourseClick(courseTitle) {
+      if (!this.isCourseAvailable(courseTitle)) {
+        this.showNotification('Coming Soon', 'This skill is still under development.', 'info');
+        return;
+      }
+      this.form.course = courseTitle;
+      this.goToView('apply');
+    },
+    validateCourseSelection() {
+      if (!this.isCourseAvailable(this.form.course)) {
+        this.showNotification('Coming Soon', 'This skill is still under development.', 'info');
+        this.form.course = '';
+      }
+    },
+    copyAccountNumber() {
+      navigator.clipboard.writeText('1012248796').then(() => {
+        this.copied = true;
+        setTimeout(() => { this.copied = false; }, 3000);
+      }).catch(() => {
+        this.showNotification('Copy Failed', 'Please copy the account number manually: 1012248796', 'error');
+      });
+    },
+    // ---- Validation helpers ----
+    isValidEmail(email) {
+      if (!email || typeof email !== 'string') return false;
+      const trimmed = email.trim();
+      // Robust but practical production regex (allows legitimate addresses)
+      const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+      return re.test(trimmed) && trimmed.length <= 254 && !trimmed.startsWith('.') && !trimmed.includes('..');
+    },
+    isValidNigerianPhone(phone) {
+      if (!phone || typeof phone !== 'string') return false;
+      // Remove spaces, dashes, parentheses
+      let cleaned = phone.replace(/[\s\-\(\)]/g, '');
+      // Accept: 0803..., 0703..., 0903..., +234803..., 234803..., 803...
+      if (cleaned.startsWith('+234')) cleaned = '0' + cleaned.slice(4);
+      else if (cleaned.startsWith('234')) cleaned = '0' + cleaned.slice(3);
+      // Now should be 11 digits starting with 0
+      if (!/^0[789][01]\d{8}$/.test(cleaned)) return false;
+      return true;
+    },
+    // SILENT Google Forms submission — preserved exactly
+    async submitToGoogleForm() {
+      try {
+        const formData = new FormData();
+        formData.append(GOOGLE_FORM_ENTRY_MAP.firstName, this.form.firstName);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.middleName, this.form.middleName || '');
+        formData.append(GOOGLE_FORM_ENTRY_MAP.surname, this.form.surname);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.email, this.form.email);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.phone, this.form.phone);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.address, this.form.address);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.state, this.form.state);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.gender, this.form.gender);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.lga, this.form.lga);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.course, this.form.course);
+        formData.append(GOOGLE_FORM_ENTRY_MAP.hasPreviousSkills, this.form.hasPreviousSkills || 'No');
+        formData.append(GOOGLE_FORM_ENTRY_MAP.previousSkills, this.form.previousSkills || '');
+
+        await fetch(GOOGLE_FORM_ACTION_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formData
+        });
+      } catch (error) {
+        this.showNotification(
+          'Sync Notice',
+          'Your application form was generated successfully, but we could not sync your record online due to a network issue. Please check your internet connection - your printed/downloaded form is unaffected.',
+          'error'
+        );
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+    submitForm() {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+      this.formErrors = { email: '', phone: '' };
+
+      if (!this.passportImage) {
+        this.showNotification('Passport Required', 'Please upload or capture a passport photo to proceed.', 'error');
+        this.isSubmitting = false;
+        return;
+      }
+
+      // Required fields (middle name is optional)
+      if (
+        !this.form.firstName.trim() ||
+        !this.form.surname.trim() ||
+        !this.form.address.trim() ||
+        !this.form.state.trim() ||
+        !this.form.lga.trim() ||
+        !this.form.gender ||
+        !this.form.phone.trim() ||
+        !this.form.email.trim() ||
+        !this.form.course
+      ) {
+        this.showNotification('Missing Information', 'Please complete all required fields.', 'error');
+        this.isSubmitting = false;
+        return;
+      }
+
+      // Email validation
+      if (!this.isValidEmail(this.form.email)) {
+        this.formErrors.email = 'Please enter a valid email address (e.g. name@example.com).';
+        this.isSubmitting = false;
+        return;
+      }
+
+      // Phone validation (Nigerian formats)
+      if (!this.isValidNigerianPhone(this.form.phone)) {
+        this.formErrors.phone = 'Please enter a valid Nigerian phone number (e.g. 08032447550 or +2348032447550).';
+        this.isSubmitting = false;
+        return;
+      }
+
+      // Fire silent Google Forms submission (not awaited)
+      this.submitToGoogleForm();
+
+      // Show payment popup
+      this.paymentModalShow = true;
+    },
+    confirmPaymentAndGenerate() {
+      this.paymentModalShow = false;
+      const today = new Date().toLocaleDateString('en-GB');
+      this.student = {
+        ...this.form,
+        passport: this.passportImage,
+        today
+      };
+      this.showPreview = true;
+      this.$nextTick(() => {
+        const el = document.getElementById('admission-form');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
+    },
+    printReceipt() {
+      window.print();
+    },
+    restartApplication() {
+      this.showPreview = false;
+      this.student = null;
+      this.passportImage = null;
+      this.paymentModalShow = false;
+      this.isSubmitting = false;
+      this.formErrors = { email: '', phone: '' };
+      this.form = {
+        firstName: '',
+        middleName: '',
+        surname: '',
+        address: '',
+        state: '',
+        lga: '',
+        gender: '',
+        phone: '',
+        email: '',
+        course: '',
+        hasPreviousSkills: 'No',
+        previousSkills: ''
+      };
+    },
+    // ---- Message form (silent Google Form) ----
+    async submitMessageForm() {
+      if (this.isMessageSubmitting) return;
+      this.messageErrors = { email: '', message: '' };
+      this.messageSuccess = false;
+
+      const email = (this.messageForm.email || '').trim();
+      const message = (this.messageForm.message || '').trim();
+
+      if (!email) {
+        this.messageErrors.email = 'Email is required.';
+        return;
+      }
+      if (!this.isValidEmail(email)) {
+        this.messageErrors.email = 'Please enter a valid email address.';
+        return;
+      }
+      if (!message) {
+        this.messageErrors.message = 'Message is required.';
+        return;
+      }
+      if (message.length < 5) {
+        this.messageErrors.message = 'Please write a longer message.';
+        return;
+      }
+
+      this.isMessageSubmitting = true;
+      try {
+        const formData = new FormData();
+        formData.append(MESSAGE_FORM_ENTRIES.email, email);
+        formData.append(MESSAGE_FORM_ENTRIES.message, message);
+
+        await fetch(MESSAGE_FORM_ACTION_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formData
+        });
+
+        this.messageSuccess = true;
+        this.messageForm = { email: '', message: '' };
+        setTimeout(() => { this.messageSuccess = false; }, 6000);
+      } catch (err) {
+        this.showNotification('Send Failed', 'Unable to send your message at this time. Please try again or contact us via WhatsApp / email.', 'error');
+      } finally {
+        this.isMessageSubmitting = false;
+      }
+    },
+    // ---- Single video play ----
+    onVideoPlay(event) {
+      const current = event.target;
+      const allVideos = document.querySelectorAll('.video-card video');
+      allVideos.forEach(v => {
+        if (v !== current && !v.paused) {
+          v.pause();
+        }
+      });
+    },
+    // PWA Install
+    async installApp() {
+      if (!this.deferredPrompt) return;
+      this.deferredPrompt.prompt();
+      const { outcome } = await this.deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        this.isInstalled = true;
+      }
+      this.deferredPrompt = null;
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "BSAC - Brethren Skills Acquisition Center",
+  "short_name": "BSAC",
+  "description": "Brethren Skills Acquisition Center – Fashion Design, Bakery and more at EYN Church Utako, Abuja.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F5F0E8",
+  "theme_color": "#8B2E2E",
+  "icons": [
+    {
+      "src": "app.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "app.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle"],
+  "lang": "en"
+}
