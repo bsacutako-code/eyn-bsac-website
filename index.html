@@ -151,7 +151,7 @@
     transform: scaleX(-1); /* mirror for natural selfie feel */
   }
 
-  /* Video cards keep aspect ratio and stay reasonably sized */
+  /* Video cards keep aspect ratio */
   .video-card video {
     width: 100%;
     height: 100%;
@@ -168,6 +168,18 @@
   }
   .like-active {
     color: #8B2E2E !important;
+  }
+
+  /* Chat bubbles */
+  .chat-bubble-me {
+    background: #8B2E2E;
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+  }
+  .chat-bubble-them {
+    background: #F5F0E8;
+    color: #1B1B1B;
+    border-radius: 18px 18px 18px 4px;
   }
 
   /* PERFECT A4 PRINT MEDIA STYLES */
@@ -224,7 +236,7 @@
       </div>
 
       <!-- Header Navigation (desktop + mobile friendly) -->
-      <nav class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+      <nav class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         <button @click="goToView('home')" 
                 class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition hidden sm:inline-flex items-center gap-1.5"
                 :class="{ 'text-white underline underline-offset-4': currentView === 'home' }"
@@ -238,10 +250,16 @@
           <i class="fas fa-user-plus"></i> <span>Enrol</span>
         </button>
         <button @click="goToView('activities')" 
-                class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition inline-flex items-center gap-1.5 px-2 py-1 rounded-full hover:bg-white/10"
-                :class="{ 'text-white bg-white/15': currentView === 'activities' }"
+                class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition hidden sm:inline-flex items-center gap-1.5"
+                :class="{ 'text-white underline underline-offset-4': currentView === 'activities' }"
                 aria-label="See Our Activities">
-          <i class="fas fa-play-circle"></i> <span class="hidden xs:inline sm:inline">Activities</span>
+          <i class="fas fa-play-circle"></i> <span>Activities</span>
+        </button>
+        <button @click="goToView('connect')" 
+                class="text-[#F5F0E8]/90 hover:text-white text-xs font-semibold transition inline-flex items-center gap-1.5 px-2 py-1 rounded-full hover:bg-white/10"
+                :class="{ 'text-white bg-white/15': currentView === 'connect' }"
+                aria-label="Connect with BSAC Users">
+          <i class="fas fa-comments"></i> <span class="hidden xs:inline sm:inline">Connect</span>
         </button>
 
         <!-- Install PWA Button -->
@@ -434,6 +452,52 @@
         <p v-if="cameraError" class="text-xs text-red-600 text-center bg-red-50 p-2 rounded-lg">
           {{ cameraError }} — You can still upload a photo instead.
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== REAL-TIME CHAT MODAL ===================== -->
+  <div v-if="chatOpen" class="fixed inset-0 z-[99997] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center no-print">
+    <div class="bg-white w-full max-w-lg h-[85vh] sm:h-[80vh] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <!-- Chat header -->
+      <div class="bg-[#8B2E2E] text-white px-4 py-3 flex items-center gap-3 flex-shrink-0">
+        <button @click="closeChat" class="p-2 -ml-1 rounded-full hover:bg-white/10" aria-label="Close chat">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="w-10 h-10 rounded-full bg-[#C49A6C] flex items-center justify-center font-bold text-sm flex-shrink-0">
+          {{ (currentChatPeer && currentChatPeer.name) ? currentChatPeer.name.charAt(0).toUpperCase() : '?' }}
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="font-bold text-sm truncate">{{ currentChatPeer ? currentChatPeer.name : 'Chat' }}</p>
+          <p class="text-[11px] text-white/70">{{ currentChatPeer && currentChatPeer.isAdmin ? 'BSAC Admin' : 'BSAC Community' }}</p>
+        </div>
+      </div>
+
+      <!-- Messages area -->
+      <div ref="chatMessagesEl" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F5F0E8]/40">
+        <div v-if="!currentChatMessages.length" class="text-center text-gray-400 text-sm py-10">
+          <i class="fas fa-comments text-3xl mb-2 opacity-40"></i>
+          <p>No messages yet. Say hello!</p>
+        </div>
+        <div v-for="(msg, mi) in currentChatMessages" :key="mi"
+             class="flex" :class="msg.fromMe ? 'justify-end' : 'justify-start'">
+          <div class="max-w-[80%] px-3.5 py-2.5 text-sm leading-snug shadow-sm"
+               :class="msg.fromMe ? 'chat-bubble-me' : 'chat-bubble-them'">
+            <p class="whitespace-pre-wrap break-words">{{ msg.text }}</p>
+            <p class="text-[10px] mt-1 opacity-70 text-right">{{ formatChatTime(msg.ts) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input bar -->
+      <div class="border-t border-gray-200 p-3 flex items-center gap-2 bg-white flex-shrink-0">
+        <input v-model="chatInput" type="text" placeholder="Type a message…" maxlength="500"
+               class="flex-1 p-3 border border-gray-200 rounded-full text-sm outline-none focus:border-[#8B2E2E]"
+               @keyup.enter="sendChatMessage" aria-label="Message" />
+        <button @click="sendChatMessage" :disabled="!chatInput.trim()"
+                class="w-11 h-11 rounded-full bg-[#8B2E2E] text-white flex items-center justify-center hover:bg-[#6c2323] transition disabled:opacity-40 shadow">
+          <i class="fas fa-paper-plane"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -705,6 +769,7 @@
               <li><button @click="goToView('home')" class="hover:text-white transition">Home</button></li>
               <li><button @click="goToView('apply')" class="hover:text-white transition">Apply / Enrol</button></li>
               <li><button @click="goToView('activities')" class="hover:text-white transition">Our Activities</button></li>
+              <li><button @click="goToView('connect')" class="hover:text-white transition">Connect</button></li>
               <li><a href="#about" class="hover:text-white transition">About</a></li>
               <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
             </ul>
@@ -986,7 +1051,7 @@
         <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-4"></span>
       </div>
 
-      <!-- Media Cards — rows, professional sizing, correct aspect ratio -->
+      <!-- Media Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
         <div v-for="(item, idx) in activitiesMedia" :key="idx" class="video-card bg-white rounded-2xl shadow-lg overflow-hidden hover:-translate-y-1 transition" :data-video-idx="idx">
           <div class="aspect-video bg-gray-900 relative">
@@ -1001,7 +1066,6 @@
             <h3 class="font-bold text-gray-800 text-sm">{{ item.title }}</h3>
             <p class="text-xs text-gray-500 mt-1">{{ item.desc }}</p>
 
-            <!-- Like / Comment / Share -->
             <div class="video-actions mt-3 flex items-center gap-1 border-t border-gray-100 pt-3">
               <button type="button" @click="toggleLike(idx)"
                       class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold hover:bg-[#F5F0E8] transition"
@@ -1024,7 +1088,6 @@
               </button>
             </div>
 
-            <!-- Comment box -->
             <div v-if="item.showComments" class="mt-3 space-y-2">
               <div v-if="item.comments && item.comments.length" class="max-h-28 overflow-y-auto space-y-1.5 mb-2">
                 <div v-for="(c, ci) in item.comments" :key="ci" class="bg-[#F5F0E8] rounded-lg px-3 py-1.5 text-xs text-gray-700">
@@ -1058,7 +1121,6 @@
           SEE MORE ACTIVITIES ON YOUTUBE
         </a>
 
-        <!-- Social icons row -->
         <div class="mt-8 pt-6 border-t border-gray-100">
           <p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4">Follow Us</p>
           <div class="flex flex-wrap items-center justify-center gap-4">
@@ -1080,6 +1142,125 @@
     </div>
   </div>
 
+  <!-- ===================== CONNECT VIEW (NEW) ===================== -->
+  <div v-show="currentView === 'connect'" class="min-h-screen pb-28">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <div class="flex items-center justify-between mb-8 no-print">
+        <button @click="goToView('home')" class="inline-flex items-center gap-2 text-[#8B2E2E] font-semibold text-sm hover:underline">
+          <i class="fas fa-arrow-left"></i> Back to Homepage
+        </button>
+        <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Community</span>
+      </div>
+
+      <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold">Connect with BSAC</h1>
+        <p class="text-gray-600 mt-2 text-sm max-w-md mx-auto">Join the community pool, chat with fellow students, or reach admins instantly.</p>
+        <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-4"></span>
+      </div>
+
+      <!-- Join / Leave Pool Card -->
+      <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-full bg-[#F5F0E8] flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-users text-[#8B2E2E] text-xl"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold text-gray-800">Community Connection Pool</h3>
+            <p class="text-xs text-gray-500 mt-1">Appear in the public directory so other BSAC users can start a chat with you. Your presence is stored locally and synced across tabs on this device.</p>
+
+            <div v-if="!isInPool" class="mt-4 space-y-3">
+              <input v-model="connectDisplayName" type="text" placeholder="Display name (e.g. Ada)" maxlength="30"
+                     class="w-full p-3 border border-gray-300 rounded-xl text-sm outline-none focus:border-[#8B2E2E]"
+                     @keyup.enter="joinConnectPool" />
+              <button @click="joinConnectPool"
+                      class="w-full bg-[#8B2E2E] text-white py-3 rounded-full font-bold text-sm hover:bg-[#6c2323] transition shadow">
+                <i class="fas fa-plug mr-2"></i> Join Connection Pool
+              </button>
+            </div>
+            <div v-else class="mt-4 flex flex-wrap items-center gap-3">
+              <span class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Online as {{ myPeerName }}
+              </span>
+              <button @click="leaveConnectPool"
+                      class="text-xs font-semibold text-red-600 hover:underline">
+                Leave Pool
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connect with Admins -->
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-user-shield text-[#8B2E2E]"></i> Connect with Admins
+        </h2>
+        <div class="space-y-3">
+          <div v-for="admin in admins" :key="admin.id"
+               class="bg-white rounded-2xl shadow-md p-4 flex items-center gap-4 border border-gray-100">
+            <div class="w-12 h-12 rounded-full bg-[#8B2E2E] text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+              {{ admin.name.charAt(0) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-sm text-gray-800">{{ admin.name }}</p>
+              <p class="text-xs text-gray-500">{{ admin.role }}</p>
+            </div>
+            <div class="flex gap-2 flex-shrink-0">
+              <button @click="startChat(admin)"
+                      class="bg-[#8B2E2E] text-white text-xs font-bold px-3 py-2 rounded-full hover:bg-[#6c2323] transition">
+                Chat
+              </button>
+              <a :href="'https://wa.me/' + admin.wa" target="_blank" rel="noopener noreferrer"
+                 class="bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-full hover:bg-emerald-700 transition">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Users Directory -->
+      <div>
+        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fas fa-user-friends text-[#8B2E2E]"></i> Active Users
+          <span class="text-xs font-normal text-gray-400">({{ onlinePeers.length }} online)</span>
+        </h2>
+
+        <div v-if="!onlinePeers.length" class="bg-white rounded-2xl shadow-md p-8 text-center text-gray-400">
+          <i class="fas fa-user-slash text-3xl mb-3 opacity-40"></i>
+          <p class="text-sm">No other users are currently in the pool.</p>
+          <p class="text-xs mt-1">Join the pool above so others can find you, or open the app in another tab to test.</p>
+        </div>
+
+        <div v-else class="space-y-3">
+          <div v-for="peer in onlinePeers" :key="peer.id"
+               class="bg-white rounded-2xl shadow-md p-4 flex items-center gap-4 border border-gray-100">
+            <div class="relative flex-shrink-0">
+              <div class="w-12 h-12 rounded-full bg-[#C49A6C] text-white flex items-center justify-center font-bold text-lg">
+                {{ peer.name.charAt(0).toUpperCase() }}
+              </div>
+              <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-sm text-gray-800 truncate">{{ peer.name }}</p>
+              <p class="text-xs text-gray-500">Joined {{ formatRelative(peer.joinedAt) }}</p>
+            </div>
+            <button @click="startChat(peer)"
+                    class="bg-[#8B2E2E] text-white text-xs font-bold px-4 py-2.5 rounded-full hover:bg-[#6c2323] transition flex-shrink-0 shadow">
+              Begin Chat
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-gray-400 text-center mt-10 leading-relaxed">
+        Presence & chat messages are stored in your browser (localStorage + BroadcastChannel).  
+        For true multi-device real-time across the internet, connect Firebase Realtime Database (see setup guide).
+      </p>
+    </div>
+  </div>
+
   <!-- STATIC BOTTOM APP NAVIGATION BAR -->
   <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 z-[9999] py-2 px-2 flex justify-around items-center shadow-lg no-print" aria-label="Main navigation">
     <button @click="goToView('home')" class="flex flex-col items-center transition px-2 py-1 rounded-lg" :class="currentView === 'home' ? 'text-[#8B2E2E]' : 'text-gray-600 hover:text-[#8B2E2E]'" aria-label="Home" :aria-current="currentView === 'home' ? 'page' : null">
@@ -1094,10 +1275,10 @@
       <i class="fas fa-play-circle text-xl"></i>
       <span class="text-[10px] font-bold uppercase mt-1">Activities</span>
     </button>
-    <a href="#contact" @click="goToView('home')" class="flex flex-col items-center text-gray-600 hover:text-[#8B2E2E] transition px-2 py-1 rounded-lg" aria-label="Contact">
-      <i class="fas fa-address-book text-xl"></i>
-      <span class="text-[10px] font-bold uppercase mt-1">Contact</span>
-    </a>
+    <button @click="goToView('connect')" class="flex flex-col items-center transition px-2 py-1 rounded-lg" :class="currentView === 'connect' ? 'text-[#8B2E2E]' : 'text-gray-600 hover:text-[#8B2E2E]'" aria-label="Connect" :aria-current="currentView === 'connect' ? 'page' : null">
+      <i class="fas fa-comments text-xl"></i>
+      <span class="text-[10px] font-bold uppercase mt-1">Connect</span>
+    </button>
   </nav>
 
 </div>
@@ -1129,6 +1310,11 @@ const MESSAGE_FORM_ENTRIES = {
   email: 'entry.2144367608',
   message: 'entry.1843480981'
 };
+
+// Local storage keys for Connect feature
+const LS_POOL = 'bsac_connect_pool_v1';
+const LS_CHATS = 'bsac_chats_v1';
+const LS_MY_ID = 'bsac_my_peer_id';
 
 createApp({
   data() {
@@ -1231,6 +1417,23 @@ createApp({
         { q: 'Who can apply for BSAC training programs?', a: 'BSAC programs are open to anyone looking to acquire practical skills for self-reliance and career empowerment.', open: false },
         { q: 'Where is BSAC located?', a: 'BSAC is located at EYN Church Utako, No.1 Teslim O. Elias Street, Near Old CBN Quarters, Utako, Abuja.', open: false },
         { q: 'Will I receive a certificate after training?', a: 'Yes, students who successfully complete their coursework and practical assessments will receive an official certification.', open: false }
+      ],
+
+      // ========== CONNECT FEATURE ==========
+      isInPool: false,
+      myPeerId: null,
+      myPeerName: '',
+      connectDisplayName: '',
+      pool: [],
+      chatOpen: false,
+      currentChatPeer: null,
+      chatInput: '',
+      allChats: {},           // { peerId: [ {text, fromMe, ts} ] }
+      chatChannel: null,
+      poolRefreshTimer: null,
+      admins: [
+        { id: 'admin-1', name: 'BSAC Admissions', role: 'Centre Admin', isAdmin: true, wa: '2348032447550' },
+        { id: 'admin-2', name: 'Training Coordinator', role: 'Skills Admin', isAdmin: true, wa: '2348032447550' }
       ]
     }
   },
@@ -1249,18 +1452,27 @@ createApp({
         return `Thank you, ${this.userName}, for your message. Please stay tuned — we will get back to you as soon as possible!`;
       }
       return 'Thank you for your message. Please stay tuned — we will get back to you as soon as possible!';
+    },
+    onlinePeers() {
+      // Exclude myself and expired entries (stale > 5 min)
+      const now = Date.now();
+      return this.pool.filter(p => p.id !== this.myPeerId && (now - (p.lastSeen || p.joinedAt)) < 5 * 60 * 1000);
+    },
+    currentChatMessages() {
+      if (!this.currentChatPeer) return [];
+      return this.allChats[this.currentChatPeer.id] || [];
     }
   },
   mounted() {
     // Hide splash screen after 5 seconds, then optionally ask for name
     setTimeout(() => {
       this.welcomeActive = false;
-      // Show name prompt only if not already decided this session
       try {
         const stored = sessionStorage.getItem('bsac_user_name');
         const skipped = sessionStorage.getItem('bsac_name_skipped');
         if (stored) {
           this.userName = stored;
+          this.connectDisplayName = stored;
         } else if (!skipped) {
           this.namePromptActive = true;
         } else {
@@ -1290,7 +1502,6 @@ createApp({
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       this.deferredPrompt = e;
-      // Show floating banner after a short delay if not dismissed
       if (!this.installBannerDismissed && !this.isInstalled) {
         setTimeout(() => {
           if (this.deferredPrompt && !this.isInstalled && !this.installBannerDismissed) {
@@ -1304,7 +1515,6 @@ createApp({
       this.deferredPrompt = null;
       this.showInstallBanner = false;
     });
-    // Detect already installed (standalone)
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
       this.isInstalled = true;
     }
@@ -1318,7 +1528,6 @@ createApp({
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((reg) => {
-          // Check for updates periodically
           setInterval(() => {
             reg.update().catch(() => {});
           }, 60 * 60 * 1000);
@@ -1327,12 +1536,10 @@ createApp({
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New version available — activate it
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
               }
             });
           });
-          // Reload when controller changes so installed app gets new content
           let refreshing = false;
           navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (refreshing) return;
@@ -1345,6 +1552,9 @@ createApp({
 
     // IntersectionObserver: pause videos when off-screen
     this.$nextTick(() => this.setupVideoObserver());
+
+    // ---- CONNECT FEATURE INIT ----
+    this.initConnectSystem();
   },
   beforeUnmount() {
     window.removeEventListener('hashchange', this.handleHash);
@@ -1356,6 +1566,12 @@ createApp({
     }
     if (this.slideInterval) clearInterval(this.slideInterval);
     if (this.headerTextInterval) clearInterval(this.headerTextInterval);
+    if (this.poolRefreshTimer) clearInterval(this.poolRefreshTimer);
+    if (this.chatChannel) {
+      try { this.chatChannel.close(); } catch (e) {}
+    }
+    // Soft leave on unload so presence eventually expires
+    this.leaveConnectPool(true);
   },
   watch: {
     currentView(newVal) {
@@ -1373,19 +1589,18 @@ createApp({
       if (location.hash !== hash) {
         history.pushState({ view }, '', hash);
       }
-      // Update document title for better UX / SEO feel
       const titles = {
         home: 'BSAC | Brethren Skills Acquisition Center | EYN Church Utako Abuja',
         apply: 'Apply Now | BSAC Admission Form',
-        activities: 'Our Activities | BSAC'
+        activities: 'Our Activities | BSAC',
+        connect: 'Connect | BSAC Community'
       };
       document.title = titles[view] || titles.home;
-      // Scroll to top of the new view
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
     handleHash() {
       const hash = (location.hash || '#home').replace('#', '') || 'home';
-      if (['home', 'apply', 'activities'].includes(hash)) {
+      if (['home', 'apply', 'activities', 'connect'].includes(hash)) {
         this.currentView = hash;
       } else {
         this.currentView = 'home';
@@ -1417,7 +1632,6 @@ createApp({
         this.passportImage = event.target.result;
       };
       reader.readAsDataURL(file);
-      // reset input so same file can be re-selected later
       e.target.value = '';
     },
     removePassport() {
@@ -1456,7 +1670,6 @@ createApp({
       canvas.width = video.videoWidth || 480;
       canvas.height = video.videoHeight || 640;
       const ctx = canvas.getContext('2d');
-      // Mirror to match preview
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -1518,22 +1731,18 @@ createApp({
     isValidEmail(email) {
       if (!email || typeof email !== 'string') return false;
       const trimmed = email.trim();
-      // Robust but practical production regex (allows legitimate addresses)
       const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
       return re.test(trimmed) && trimmed.length <= 254 && !trimmed.startsWith('.') && !trimmed.includes('..');
     },
     isValidNigerianPhone(phone) {
       if (!phone || typeof phone !== 'string') return false;
-      // Remove spaces, dashes, parentheses
       let cleaned = phone.replace(/[\s\-\(\)]/g, '');
-      // Accept: 0803..., 0703..., 0903..., +234803..., 234803..., 803...
       if (cleaned.startsWith('+234')) cleaned = '0' + cleaned.slice(4);
       else if (cleaned.startsWith('234')) cleaned = '0' + cleaned.slice(3);
-      // Now should be 11 digits starting with 0
       if (!/^0[789][01]\d{8}$/.test(cleaned)) return false;
       return true;
     },
-    // SILENT Google Forms submission — preserved exactly
+    // SILENT Google Forms submission
     async submitToGoogleForm() {
       try {
         const formData = new FormData();
@@ -1576,7 +1785,6 @@ createApp({
         return;
       }
 
-      // Required fields (middle name is optional)
       if (
         !this.form.firstName.trim() ||
         !this.form.surname.trim() ||
@@ -1593,24 +1801,19 @@ createApp({
         return;
       }
 
-      // Email validation
       if (!this.isValidEmail(this.form.email)) {
         this.formErrors.email = 'Please enter a valid email address (e.g. name@example.com).';
         this.isSubmitting = false;
         return;
       }
 
-      // Phone validation (Nigerian formats)
       if (!this.isValidNigerianPhone(this.form.phone)) {
         this.formErrors.phone = 'Please enter a valid Nigerian phone number (e.g. 08032447550 or +2348032447550).';
         this.isSubmitting = false;
         return;
       }
 
-      // Fire silent Google Forms submission (not awaited)
       this.submitToGoogleForm();
-
-      // Show payment popup
       this.paymentModalShow = true;
     },
     confirmPaymentAndGenerate() {
@@ -1780,7 +1983,6 @@ createApp({
         } else if (navigator.share) {
           await navigator.share(shareData);
         } else {
-          // Fallback: copy link
           await navigator.clipboard.writeText(shareData.url);
           this.showNotification('Link copied', 'Activity link copied to clipboard. You can paste and share it.', 'info');
         }
@@ -1799,6 +2001,7 @@ createApp({
       const name = (this.nameInput || '').trim().replace(/\s+/g, ' ').slice(0, 40);
       if (name) {
         this.userName = name;
+        this.connectDisplayName = name;
         try { sessionStorage.setItem('bsac_user_name', name); } catch (e) {}
       }
       this.namePromptActive = false;
@@ -1831,6 +2034,208 @@ createApp({
       this.showInstallBanner = false;
       this.installBannerDismissed = true;
       try { sessionStorage.setItem('bsac_install_dismissed', '1'); } catch (e) {}
+    },
+
+    // ========== CONNECT SYSTEM (localStorage + BroadcastChannel) ==========
+    initConnectSystem() {
+      // Restore my peer id
+      try {
+        this.myPeerId = localStorage.getItem(LS_MY_ID);
+        if (!this.myPeerId) {
+          this.myPeerId = 'peer_' + Math.random().toString(36).slice(2, 11) + '_' + Date.now().toString(36);
+          localStorage.setItem(LS_MY_ID, this.myPeerId);
+        }
+      } catch (e) {
+        this.myPeerId = 'peer_' + Date.now();
+      }
+
+      // Load chats
+      try {
+        const raw = localStorage.getItem(LS_CHATS);
+        this.allChats = raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        this.allChats = {};
+      }
+
+      // Load & clean pool
+      this.refreshPoolFromStorage();
+
+      // BroadcastChannel for multi-tab sync
+      if (typeof BroadcastChannel !== 'undefined') {
+        this.chatChannel = new BroadcastChannel('bsac_connect_channel');
+        this.chatChannel.onmessage = (ev) => {
+          const data = ev.data || {};
+          if (data.type === 'pool_update') {
+            this.refreshPoolFromStorage();
+          } else if (data.type === 'chat_message' && data.to === this.myPeerId) {
+            this.receiveChatMessage(data.from, data.fromName, data.text, data.ts);
+          } else if (data.type === 'chat_message' && data.from === this.myPeerId) {
+            // already handled locally
+          }
+        };
+      }
+
+      // Heartbeat / clean every 20 s
+      this.poolRefreshTimer = setInterval(() => {
+        this.refreshPoolFromStorage();
+        if (this.isInPool) this.touchMyPresence();
+      }, 20000);
+    },
+
+    refreshPoolFromStorage() {
+      try {
+        const raw = localStorage.getItem(LS_POOL);
+        let list = raw ? JSON.parse(raw) : [];
+        const now = Date.now();
+        // Drop entries older than 5 minutes
+        list = list.filter(p => (now - (p.lastSeen || p.joinedAt)) < 5 * 60 * 1000);
+        this.pool = list;
+        // Check if I am still in the pool
+        const me = list.find(p => p.id === this.myPeerId);
+        this.isInPool = !!me;
+        if (me) this.myPeerName = me.name;
+      } catch (e) {
+        this.pool = [];
+      }
+    },
+
+    persistPool(list) {
+      try {
+        localStorage.setItem(LS_POOL, JSON.stringify(list));
+        if (this.chatChannel) {
+          this.chatChannel.postMessage({ type: 'pool_update' });
+        }
+      } catch (e) {}
+    },
+
+    touchMyPresence() {
+      const list = [...this.pool];
+      const idx = list.findIndex(p => p.id === this.myPeerId);
+      if (idx >= 0) {
+        list[idx].lastSeen = Date.now();
+        this.persistPool(list);
+        this.pool = list;
+      }
+    },
+
+    joinConnectPool() {
+      const name = (this.connectDisplayName || this.userName || '').trim().slice(0, 30);
+      if (!name) {
+        this.showNotification('Name required', 'Please enter a display name to join the pool.', 'error');
+        return;
+      }
+      this.myPeerName = name;
+      const now = Date.now();
+      let list = [...this.pool];
+      // Remove any previous entry of mine
+      list = list.filter(p => p.id !== this.myPeerId);
+      list.push({
+        id: this.myPeerId,
+        name,
+        joinedAt: now,
+        lastSeen: now
+      });
+      this.persistPool(list);
+      this.pool = list;
+      this.isInPool = true;
+      this.showNotification('Connected', `You are now visible in the directory as ${name}.`, 'info');
+    },
+
+    leaveConnectPool(silent = false) {
+      let list = this.pool.filter(p => p.id !== this.myPeerId);
+      this.persistPool(list);
+      this.pool = list;
+      this.isInPool = false;
+      this.myPeerName = '';
+      if (!silent) {
+        this.showNotification('Left pool', 'You are no longer visible in the community directory.', 'info');
+      }
+    },
+
+    startChat(peer) {
+      if (!peer) return;
+      this.currentChatPeer = peer;
+      this.chatInput = '';
+      this.chatOpen = true;
+      // Ensure chat array exists
+      if (!this.allChats[peer.id]) {
+        this.allChats[peer.id] = [];
+      }
+      this.$nextTick(() => this.scrollChatToBottom());
+    },
+
+    closeChat() {
+      this.chatOpen = false;
+      this.currentChatPeer = null;
+      this.chatInput = '';
+    },
+
+    sendChatMessage() {
+      const text = (this.chatInput || '').trim();
+      if (!text || !this.currentChatPeer) return;
+
+      const ts = Date.now();
+      const peerId = this.currentChatPeer.id;
+
+      // Local add
+      if (!this.allChats[peerId]) this.allChats[peerId] = [];
+      this.allChats[peerId].push({ text, fromMe: true, ts });
+      this.persistChats();
+
+      // Broadcast to other tabs
+      if (this.chatChannel) {
+        this.chatChannel.postMessage({
+          type: 'chat_message',
+          from: this.myPeerId,
+          fromName: this.myPeerName || this.userName || 'Guest',
+          to: peerId,
+          text,
+          ts
+        });
+      }
+
+      // For admins we also keep a local copy (no real remote delivery in pure local mode)
+      this.chatInput = '';
+      this.$nextTick(() => this.scrollChatToBottom());
+    },
+
+    receiveChatMessage(fromId, fromName, text, ts) {
+      if (!this.allChats[fromId]) this.allChats[fromId] = [];
+      this.allChats[fromId].push({ text, fromMe: false, ts });
+      this.persistChats();
+
+      // If chat with this person is open, scroll
+      if (this.chatOpen && this.currentChatPeer && this.currentChatPeer.id === fromId) {
+        this.$nextTick(() => this.scrollChatToBottom());
+      } else {
+        // Optional toast
+        this.showNotification('New message', `${fromName}: ${text.slice(0, 40)}${text.length > 40 ? '…' : ''}`, 'info');
+      }
+    },
+
+    persistChats() {
+      try {
+        localStorage.setItem(LS_CHATS, JSON.stringify(this.allChats));
+      } catch (e) {}
+    },
+
+    scrollChatToBottom() {
+      const el = this.$refs.chatMessagesEl;
+      if (el) el.scrollTop = el.scrollHeight;
+    },
+
+    formatChatTime(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    },
+
+    formatRelative(ts) {
+      if (!ts) return '';
+      const diff = Math.floor((Date.now() - ts) / 1000);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+      return Math.floor(diff / 3600) + ' h ago';
     }
   }
 }).mount('#app');
