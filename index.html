@@ -63,7 +63,7 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -127,17 +127,6 @@
   }
   .video-actions button:active { transform: scale(0.94); }
   .like-active { color: #8B2E2E !important; }
-
-  .chat-bubble-me {
-    background: #8B2E2E;
-    color: white;
-    border-radius: 18px 18px 4px 18px;
-  }
-  .chat-bubble-them {
-    background: #F5F0E8;
-    color: #1B1B1B;
-    border-radius: 18px 18px 18px 4px;
-  }
 
   @media print {
     body * { visibility: hidden !important; }
@@ -248,7 +237,7 @@
     </div>
   </div>
 
-  <!-- PAYMENT MODAL (kept exactly as original) -->
+  <!-- PAYMENT MODAL -->
   <div v-if="paymentModalShow" class="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-md flex items-center justify-center p-4 no-print overflow-y-auto">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl my-8 border border-amber-200">
       <div class="text-center mb-6">
@@ -287,7 +276,7 @@
     </div>
   </div>
 
-  <!-- CAMERA MODAL (kept as original) -->
+  <!-- CAMERA MODAL -->
   <div v-if="cameraModalOpen" class="fixed inset-0 z-[99998] bg-black/90 flex flex-col items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
       <div class="bg-[#8B2E2E] text-white px-5 py-3 flex items-center justify-between">
@@ -308,49 +297,6 @@
           <button @click="closeCamera" class="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-gray-200 transition">Cancel</button>
         </div>
         <p v-if="cameraError" class="text-xs text-red-600 text-center bg-red-50 p-2 rounded-lg">{{ cameraError }} — You can still upload a photo instead.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- REAL-TIME CHAT MODAL -->
-  <div v-if="chatOpen" class="fixed inset-0 z-[99997] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center no-print">
-    <div class="bg-white w-full max-w-lg h-[85vh] sm:h-[80vh] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-      <div class="bg-[#8B2E2E] text-white px-4 py-3 flex items-center gap-3 flex-shrink-0">
-        <button @click="closeChat" class="p-2 -ml-1 rounded-full hover:bg-white/10"><i class="fas fa-arrow-left"></i></button>
-        <div class="w-10 h-10 rounded-full bg-[#C49A6C] flex items-center justify-center font-bold text-sm flex-shrink-0">
-          {{ currentChatPeerName ? currentChatPeerName.charAt(0).toUpperCase() : '?' }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <p class="font-bold text-sm truncate">{{ currentChatPeerName || 'Chat' }}</p>
-          <p class="text-[11px] text-white/70">
-            <span v-if="connectionStatus === 'connected'" class="text-emerald-300">● Connected (P2P)</span>
-            <span v-else-if="connectionStatus === 'connecting'" class="text-amber-300">● Connecting…</span>
-            <span v-else class="text-red-300">● Disconnected</span>
-          </p>
-        </div>
-      </div>
-
-      <div ref="chatMessagesEl" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F5F0E8]/40">
-        <div v-if="!currentChatMessages.length" class="text-center text-gray-400 text-sm py-10">
-          <i class="fas fa-comments text-3xl mb-2 opacity-40"></i>
-          <p>No messages yet. Say hello!</p>
-        </div>
-        <div v-for="(msg, mi) in currentChatMessages" :key="mi" class="flex" :class="msg.fromMe ? 'justify-end' : 'justify-start'">
-          <div class="max-w-[80%] px-3.5 py-2.5 text-sm leading-snug shadow-sm" :class="msg.fromMe ? 'chat-bubble-me' : 'chat-bubble-them'">
-            <p class="whitespace-pre-wrap break-words">{{ msg.text }}</p>
-            <p class="text-[10px] mt-1 opacity-70 text-right">{{ formatChatTime(msg.ts) }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="border-t border-gray-200 p-3 flex items-center gap-2 bg-white flex-shrink-0">
-        <input v-model="chatInput" type="text" placeholder="Type a message…" maxlength="500"
-               class="flex-1 p-3 border border-gray-200 rounded-full text-sm outline-none focus:border-[#8B2E2E]"
-               @keyup.enter="sendChatMessage" :disabled="connectionStatus !== 'connected'" />
-        <button @click="sendChatMessage" :disabled="!chatInput.trim() || connectionStatus !== 'connected'"
-                class="w-11 h-11 rounded-full bg-[#8B2E2E] text-white flex items-center justify-center hover:bg-[#6c2323] transition disabled:opacity-40 shadow">
-          <i class="fas fa-paper-plane"></i>
-        </button>
       </div>
     </div>
   </div>
@@ -554,7 +500,7 @@
     </footer>
   </div>
 
-  <!-- ===================== APPLICATION VIEW (kept fully intact) ===================== -->
+  <!-- ===================== APPLICATION VIEW ===================== -->
   <div v-show="currentView === 'apply'" class="min-h-screen pb-28">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div class="flex items-center justify-between mb-8 no-print">
@@ -753,7 +699,6 @@
           </div>
         </div>
       </div>
-
       <div class="bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-100">
         <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fab fa-youtube text-3xl"></i></div>
         <h3 class="text-xl font-bold text-gray-800 mb-2">Watch More on YouTube</h3>
@@ -771,83 +716,22 @@
     </div>
   </div>
 
-  <!-- ===================== CONNECT VIEW – REAL WEBRTC P2P ===================== -->
+  <!-- ===================== CONNECT VIEW (simplified – no P2P) ===================== -->
   <div v-show="currentView === 'connect'" class="min-h-screen pb-28">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div class="flex items-center justify-between mb-8 no-print">
         <button @click="goToView('home')" class="inline-flex items-center gap-2 text-[#8B2E2E] font-semibold text-sm hover:underline"><i class="fas fa-arrow-left"></i> Back to Homepage</button>
-        <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Community</span>
+        <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Contact</span>
       </div>
 
       <div class="text-center mb-10">
         <h1 class="text-3xl md:text-4xl text-[#8B2E2E] font-bold">Connect with BSAC</h1>
-        <p class="text-gray-600 mt-2 text-sm max-w-md mx-auto">Real peer-to-peer chat. Works across different devices and browsers.</p>
+        <p class="text-gray-600 mt-2 text-sm max-w-md mx-auto">Reach our administrators directly for admissions and enquiries.</p>
         <span class="block w-20 h-1 bg-[#C49A6C] mx-auto mt-4"></span>
       </div>
 
-      <!-- Your ID Card -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-        <div class="flex items-start gap-4">
-          <div class="w-12 h-12 rounded-full bg-[#F5F0E8] flex items-center justify-center flex-shrink-0"><i class="fas fa-id-badge text-[#8B2E2E] text-xl"></i></div>
-          <div class="flex-1 min-w-0">
-            <h3 class="font-bold text-gray-800">Your Connection ID</h3>
-            <p class="text-xs text-gray-500 mt-1">Share this ID with another person so they can connect to you.</p>
-
-            <div v-if="!peerReady" class="mt-4">
-              <input v-model="connectDisplayName" type="text" placeholder="Display name (e.g. Ada)" maxlength="24" class="w-full p-3 border border-gray-300 rounded-xl text-sm outline-none focus:border-[#8B2E2E] mb-3" />
-              <button @click="initPeer" :disabled="peerConnecting" class="w-full bg-[#8B2E2E] text-white py-3 rounded-full font-bold text-sm hover:bg-[#6c2323] transition shadow disabled:opacity-60">
-                <i v-if="peerConnecting" class="fas fa-spinner fa-spin mr-2"></i>
-                {{ peerConnecting ? 'Connecting…' : 'Start & Get My ID' }}
-              </button>
-            </div>
-
-            <div v-else class="mt-4 space-y-3">
-              <div class="bg-[#F5F0E8] rounded-xl p-4 flex items-center justify-between gap-3">
-                <div>
-                  <p class="text-[10px] uppercase font-bold text-gray-500">Your ID</p>
-                  <p class="text-lg font-extrabold tracking-wider text-[#8B2E2E] break-all">{{ myPeerId }}</p>
-                  <p class="text-xs text-gray-500 mt-0.5">{{ myPeerName }}</p>
-                </div>
-                <button @click="copyMyId" class="bg-[#8B2E2E] text-white px-3 py-2 rounded-lg text-xs font-semibold hover:bg-[#6c2323] transition flex-shrink-0">
-                  <i class="fas" :class="idCopied ? 'fa-check' : 'fa-copy'"></i>
-                  {{ idCopied ? 'Copied' : 'Copy' }}
-                </button>
-              </div>
-              <p class="text-xs text-emerald-600 font-medium"><i class="fas fa-circle text-[8px] mr-1"></i> Ready – waiting for connections</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Connect to someone -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-        <h3 class="font-bold text-gray-800 mb-1">Connect to another BSAC visitor</h3>
-        <p class="text-xs text-gray-500 mb-4">Enter the Connection ID they shared with you.</p>
-        <div class="flex gap-2">
-          <input v-model="remotePeerIdInput" type="text" placeholder="Paste their ID here" class="flex-1 p-3 border border-gray-300 rounded-xl text-sm outline-none focus:border-[#8B2E2E]" :disabled="!peerReady || connectionStatus === 'connecting'" />
-          <button @click="connectToRemote" :disabled="!peerReady || !remotePeerIdInput.trim() || connectionStatus === 'connecting'" class="bg-[#8B2E2E] text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-[#6c2323] transition disabled:opacity-50">Connect</button>
-        </div>
-        <p v-if="connectionError" class="text-xs text-red-600 mt-3 bg-red-50 p-2 rounded-lg">{{ connectionError }}</p>
-      </div>
-
-      <!-- Active connections -->
-      <div v-if="activeConnections.length" class="mb-6">
-        <h3 class="font-bold text-gray-800 mb-3">Active Connections</h3>
-        <div class="space-y-3">
-          <div v-for="conn in activeConnections" :key="conn.peer" class="bg-white rounded-2xl shadow-md p-4 flex items-center gap-4 border border-gray-100">
-            <div class="w-11 h-11 rounded-full bg-[#C49A6C] text-white flex items-center justify-center font-bold">{{ (conn.metadata?.name || conn.peer).charAt(0).toUpperCase() }}</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-sm truncate">{{ conn.metadata?.name || conn.peer }}</p>
-              <p class="text-xs text-emerald-600">● Connected (P2P)</p>
-            </div>
-            <button @click="openChatWith(conn)" class="bg-[#8B2E2E] text-white text-xs font-bold px-4 py-2.5 rounded-full hover:bg-[#6c2323] transition">Open Chat</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Admins -->
       <div class="mb-8">
-        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-user-shield text-[#8B2E2E]"></i> Connect with Admins</h2>
+        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-user-shield text-[#8B2E2E]"></i> Admins</h2>
         <div class="space-y-3">
           <div v-for="admin in admins" :key="admin.id" class="bg-white rounded-2xl shadow-md p-4 flex items-center gap-4 border border-gray-100">
             <div class="w-12 h-12 rounded-full bg-[#8B2E2E] text-white flex items-center justify-center font-bold text-lg">{{ admin.name.charAt(0) }}</div>
@@ -860,10 +744,13 @@
         </div>
       </div>
 
-      <p class="text-[11px] text-gray-400 text-center leading-relaxed">
-        Real WebRTC DataChannel • Messages travel peer-to-peer after connection.<br>
-        Signaling uses PeerJS free cloud (no chat content is stored).
-      </p>
+      <div class="bg-white rounded-2xl shadow-lg p-6 text-center border border-gray-100">
+        <p class="text-sm text-gray-600 mb-4">Prefer email or phone?</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="tel:08032447550" class="inline-flex items-center gap-2 bg-[#8B2E2E] text-white px-5 py-2.5 rounded-full text-sm font-semibold"><i class="fas fa-phone-alt"></i> 08032447550</a>
+          <a href="mailto:bsacutako@gmail.com" class="inline-flex items-center gap-2 bg-amber-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold"><i class="fas fa-envelope"></i> Email Us</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -880,26 +767,10 @@
 <script>
 const { createApp } = Vue;
 
-const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdgmtRp02Pc-xjvwmpiLETUE89cr6q_cLcDjAvmqUiMdVS0wg/formResponse';
-const GOOGLE_FORM_ENTRY_MAP = {
-  firstName: 'entry.625004985',
-  middleName: 'entry.164063823',
-  surname: 'entry.1293917626',
-  email: 'entry.1768311763',
-  phone: 'entry.1041734720',
-  address: 'entry.995585847',
-  state: 'entry.1842412526',
-  gender: 'entry.1241311783',
-  lga: 'entry.926899023',
-  course: 'entry.1883109185',
-  hasPreviousSkills: 'entry.447640198',
-  previousSkills: 'entry.1324311296'
-};
-const MESSAGE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe9WMbVkbbHtdbpDhWJh-KS3rkJ1NUK6_jG7_4mu_ahXbxCqg/formResponse';
-const MESSAGE_FORM_ENTRIES = {
-  email: 'entry.2144367608',
-  message: 'entry.1843480981'
-};
+// ========== SUPABASE ==========
+const SUPABASE_URL = 'https://eofwhrtcbodiiyvardlu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_tbVgMu5Eki4a0zBMQMxKlw_vY1TsrzB';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 createApp({
   data() {
@@ -975,24 +846,6 @@ createApp({
         { q: 'Where is BSAC located?', a: 'BSAC is located at EYN Church Utako, No.1 Teslim O. Elias Street, Near Old CBN Quarters, Utako, Abuja.', open: false },
         { q: 'Will I receive a certificate after training?', a: 'Yes, students who successfully complete their coursework and practical assessments will receive an official certification.', open: false }
       ],
-
-      // ========== REAL WEBRTC P2P ==========
-      peer: null,
-      peerReady: false,
-      peerConnecting: false,
-      myPeerId: '',
-      myPeerName: '',
-      connectDisplayName: '',
-      remotePeerIdInput: '',
-      connectionStatus: 'idle',
-      connectionError: '',
-      idCopied: false,
-      activeConnections: [],
-      chatOpen: false,
-      currentChatPeerId: null,
-      currentChatPeerName: '',
-      chatInput: '',
-      allChats: {},
       admins: [
         { id: 'admin-1', name: 'BSAC Admissions', role: 'Centre Admin', wa: '2348032447550' },
         { id: 'admin-2', name: 'Training Coordinator', role: 'Skills Admin', wa: '2348032447550' }
@@ -1013,10 +866,6 @@ createApp({
       return this.userName
         ? `Thank you, ${this.userName}, for your message. Please stay tuned — we will get back to you as soon as possible!`
         : 'Thank you for your message. Please stay tuned — we will get back to you as soon as possible!';
-    },
-    currentChatMessages() {
-      if (!this.currentChatPeerId) return [];
-      return this.allChats[this.currentChatPeerId] || [];
     }
   },
   mounted() {
@@ -1027,7 +876,6 @@ createApp({
         const skipped = sessionStorage.getItem('bsac_name_skipped');
         if (stored) {
           this.userName = stored;
-          this.connectDisplayName = stored;
         } else if (!skipped) {
           this.namePromptActive = true;
         } else {
@@ -1088,10 +936,6 @@ createApp({
     if (this.videoObserver) this.videoObserver.disconnect();
     if (this.slideInterval) clearInterval(this.slideInterval);
     if (this.headerTextInterval) clearInterval(this.headerTextInterval);
-    if (this.peer) {
-      this.peer.destroy();
-      this.peer = null;
-    }
   },
   watch: {
     currentView(newVal) {
@@ -1123,7 +967,6 @@ createApp({
     },
     closeModal() { this.customModal.show = false; },
 
-    // Passport
     triggerFileUpload() { this.$refs.fileInput.click(); },
     onPassportSelected(e) {
       const file = e.target.files[0];
@@ -1143,7 +986,6 @@ createApp({
     },
     removePassport() { this.passportImage = null; },
 
-    // Camera
     async openCamera() {
       this.cameraError = null;
       this.capturedPhoto = null;
@@ -1204,7 +1046,6 @@ createApp({
     },
     stopCamera() { this.stopCameraStreamOnly(); },
 
-    // Courses
     isCourseAvailable(courseTitle) {
       return courseTitle === 'Fashion Design' || courseTitle === 'Bakery';
     },
@@ -1231,7 +1072,6 @@ createApp({
       });
     },
 
-    // Validation
     isValidEmail(email) {
       if (!email || typeof email !== 'string') return false;
       const trimmed = email.trim();
@@ -1246,33 +1086,11 @@ createApp({
       return /^0[789][01]\d{8}$/.test(cleaned);
     },
 
-    // Google Forms
-    async submitToGoogleForm() {
-      try {
-        const formData = new FormData();
-        formData.append(GOOGLE_FORM_ENTRY_MAP.firstName, this.form.firstName);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.middleName, this.form.middleName || '');
-        formData.append(GOOGLE_FORM_ENTRY_MAP.surname, this.form.surname);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.email, this.form.email);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.phone, this.form.phone);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.address, this.form.address);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.state, this.form.state);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.gender, this.form.gender);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.lga, this.form.lga);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.course, this.form.course);
-        formData.append(GOOGLE_FORM_ENTRY_MAP.hasPreviousSkills, this.form.hasPreviousSkills || 'No');
-        formData.append(GOOGLE_FORM_ENTRY_MAP.previousSkills, this.form.previousSkills || '');
-        await fetch(GOOGLE_FORM_ACTION_URL, { method: 'POST', mode: 'no-cors', body: formData });
-      } catch (error) {
-        this.showNotification('Sync Notice', 'Your application form was generated successfully, but we could not sync your record online due to a network issue.', 'error');
-      } finally {
-        this.isSubmitting = false;
-      }
-    },
-    submitForm() {
+    async submitForm() {
       if (this.isSubmitting) return;
       this.isSubmitting = true;
       this.formErrors = { email: '', phone: '' };
+
       if (!this.passportImage) {
         this.showNotification('Passport Required', 'Please upload or capture a passport photo to proceed.', 'error');
         this.isSubmitting = false;
@@ -1293,9 +1111,51 @@ createApp({
         this.isSubmitting = false;
         return;
       }
-      this.submitToGoogleForm();
-      this.paymentModalShow = true;
+
+      try {
+        // 1. Upload passport to private Storage
+        const fileName = `passports/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+        const base64 = this.passportImage.split(',')[1];
+        const binary = atob(base64);
+        const array = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+        const blob = new Blob([array], { type: 'image/jpeg' });
+
+        const { error: uploadError } = await supabase.storage
+          .from('passports')
+          .upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
+
+        if (uploadError) throw uploadError;
+
+        // 2. Insert application record (primary store)
+        const { error: dbError } = await supabase.from('applications').insert({
+          first_name: this.form.firstName.trim(),
+          middle_name: (this.form.middleName || '').trim(),
+          surname: this.form.surname.trim(),
+          address: this.form.address.trim(),
+          state: this.form.state.trim(),
+          lga: this.form.lga.trim(),
+          gender: this.form.gender,
+          phone: this.form.phone.trim(),
+          email: this.form.email.trim().toLowerCase(),
+          course: this.form.course,
+          has_previous_skills: this.form.hasPreviousSkills || 'No',
+          previous_skills: (this.form.previousSkills || '').trim(),
+          passport_path: fileName
+        });
+
+        if (dbError) throw dbError;
+
+        // 3. Show payment modal
+        this.paymentModalShow = true;
+      } catch (err) {
+        console.error(err);
+        this.showNotification('Submission Failed', 'Unable to save your application. Please check your connection and try again, or contact us on WhatsApp.', 'error');
+      } finally {
+        this.isSubmitting = false;
+      }
     },
+
     confirmPaymentAndGenerate() {
       this.paymentModalShow = false;
       const today = new Date().toLocaleDateString('en-GB');
@@ -1320,7 +1180,6 @@ createApp({
       };
     },
 
-    // Message form
     async submitMessageForm() {
       if (this.isMessageSubmitting) return;
       this.messageErrors = { email: '', message: '' };
@@ -1331,12 +1190,15 @@ createApp({
       if (!this.isValidEmail(email)) { this.messageErrors.email = 'Please enter a valid email address.'; return; }
       if (!message) { this.messageErrors.message = 'Message is required.'; return; }
       if (message.length < 5) { this.messageErrors.message = 'Please write a longer message.'; return; }
+
       this.isMessageSubmitting = true;
       try {
-        const formData = new FormData();
-        formData.append(MESSAGE_FORM_ENTRIES.email, email);
-        formData.append(MESSAGE_FORM_ENTRIES.message, message);
-        await fetch(MESSAGE_FORM_ACTION_URL, { method: 'POST', mode: 'no-cors', body: formData });
+        const { error } = await supabase.from('messages').insert({
+          email: email.toLowerCase(),
+          message: message
+        });
+        if (error) throw error;
+
         this.messageSuccess = true;
         this.messageForm = { email: '', message: '' };
         setTimeout(() => { this.messageSuccess = false; }, 6000);
@@ -1347,7 +1209,6 @@ createApp({
       }
     },
 
-    // Videos
     onVideoPlay(event) {
       const current = event.target;
       document.querySelectorAll('.activity-video').forEach(v => {
@@ -1417,12 +1278,10 @@ createApp({
       }
     },
 
-    // Name
     saveUserName() {
       const name = (this.nameInput || '').trim().replace(/\s+/g, ' ').slice(0, 40);
       if (name) {
         this.userName = name;
-        this.connectDisplayName = name;
         try { sessionStorage.setItem('bsac_user_name', name); } catch (e) {}
       }
       this.namePromptActive = false;
@@ -1438,7 +1297,6 @@ createApp({
       } catch (e) {}
     },
 
-    // PWA
     async installApp() {
       if (!this.deferredPrompt) {
         this.showNotification('Install unavailable', 'Your browser does not support installing this app right now.', 'info');
@@ -1456,169 +1314,6 @@ createApp({
       this.showInstallBanner = false;
       this.installBannerDismissed = true;
       try { sessionStorage.setItem('bsac_install_dismissed', '1'); } catch (e) {}
-    },
-
-    // ========== REAL WEBRTC P2P METHODS ==========
-    initPeer() {
-      if (this.peerConnecting || this.peerReady) return;
-      const name = (this.connectDisplayName || this.userName || 'BSAC Visitor').trim().slice(0, 24);
-      if (!name) {
-        this.showNotification('Name required', 'Please enter a display name.', 'error');
-        return;
-      }
-      this.myPeerName = name;
-      this.peerConnecting = true;
-      this.connectionError = '';
-
-      this.peer = new Peer({ debug: 1 });
-
-      this.peer.on('open', (id) => {
-        this.myPeerId = id;
-        this.peerReady = true;
-        this.peerConnecting = false;
-        this.showNotification('Ready', `Your ID is ready. Share it with the other person.`, 'info');
-      });
-
-      this.peer.on('connection', (conn) => {
-        this.setupConnection(conn);
-      });
-
-      this.peer.on('error', (err) => {
-        this.peerConnecting = false;
-        this.connectionError = err.type === 'peer-unavailable' ? 'That ID is not online right now.' : (err.message || 'Connection error');
-        this.showNotification('Peer Error', this.connectionError, 'error');
-      });
-
-      this.peer.on('disconnected', () => {
-        this.connectionStatus = 'idle';
-      });
-    },
-
-    connectToRemote() {
-      const remoteId = (this.remotePeerIdInput || '').trim();
-      if (!remoteId || !this.peerReady) return;
-      if (remoteId === this.myPeerId) {
-        this.connectionError = 'You cannot connect to yourself.';
-        return;
-      }
-      this.connectionStatus = 'connecting';
-      this.connectionError = '';
-
-      const conn = this.peer.connect(remoteId, {
-        reliable: true,
-        metadata: { name: this.myPeerName }
-      });
-      this.setupConnection(conn);
-    },
-
-    setupConnection(conn) {
-      conn.on('open', () => {
-        this.connectionStatus = 'connected';
-        if (!this.activeConnections.find(c => c.peer === conn.peer)) {
-          this.activeConnections.push(conn);
-        }
-        this.openChatWith(conn);
-      });
-
-      conn.on('data', (data) => {
-        if (!data || typeof data.text !== 'string') return;
-        const text = this.sanitize(data.text).slice(0, 500);
-        if (!text) return;
-
-        if (!this.allChats[conn.peer]) this.allChats[conn.peer] = [];
-        this.allChats[conn.peer].push({
-          text,
-          fromMe: false,
-          ts: data.ts || Date.now()
-        });
-
-        if (this.chatOpen && this.currentChatPeerId === conn.peer) {
-          this.$nextTick(() => this.scrollChatToBottom());
-        } else {
-          this.showNotification('New message', `${data.name || 'Someone'}: ${text.slice(0, 40)}`, 'info');
-        }
-      });
-
-      conn.on('close', () => {
-        this.activeConnections = this.activeConnections.filter(c => c.peer !== conn.peer);
-        if (this.currentChatPeerId === conn.peer) {
-          this.connectionStatus = 'idle';
-        }
-      });
-
-      conn.on('error', (err) => {
-        this.connectionError = err.message || 'Connection failed';
-        this.connectionStatus = 'error';
-      });
-    },
-
-    openChatWith(conn) {
-      this.currentChatPeerId = conn.peer;
-      this.currentChatPeerName = (conn.metadata && conn.metadata.name) || conn.peer;
-      this.connectionStatus = 'connected';
-      this.chatOpen = true;
-      this.chatInput = '';
-      if (!this.allChats[conn.peer]) this.allChats[conn.peer] = [];
-      this.$nextTick(() => this.scrollChatToBottom());
-    },
-
-    closeChat() {
-      this.chatOpen = false;
-      this.currentChatPeerId = null;
-      this.currentChatPeerName = '';
-      this.chatInput = '';
-    },
-
-    sendChatMessage() {
-      const text = (this.chatInput || '').trim().slice(0, 500);
-      if (!text || !this.currentChatPeerId) return;
-
-      const conn = this.activeConnections.find(c => c.peer === this.currentChatPeerId);
-      if (!conn || !conn.open) {
-        this.showNotification('Not connected', 'The peer connection is closed.', 'error');
-        return;
-      }
-
-      const payload = {
-        text: this.sanitize(text),
-        name: this.myPeerName,
-        ts: Date.now()
-      };
-
-      conn.send(payload);
-
-      if (!this.allChats[this.currentChatPeerId]) this.allChats[this.currentChatPeerId] = [];
-      this.allChats[this.currentChatPeerId].push({
-        text: payload.text,
-        fromMe: true,
-        ts: payload.ts
-      });
-
-      this.chatInput = '';
-      this.$nextTick(() => this.scrollChatToBottom());
-    },
-
-    sanitize(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    },
-
-    copyMyId() {
-      navigator.clipboard.writeText(this.myPeerId).then(() => {
-        this.idCopied = true;
-        setTimeout(() => { this.idCopied = false; }, 2000);
-      });
-    },
-
-    scrollChatToBottom() {
-      const el = this.$refs.chatMessagesEl;
-      if (el) el.scrollTop = el.scrollHeight;
-    },
-
-    formatChatTime(ts) {
-      if (!ts) return '';
-      return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
   }
 }).mount('#app');
